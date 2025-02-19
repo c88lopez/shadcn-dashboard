@@ -10,7 +10,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { MoreHorizontal, Delete, Pencil, Copy } from "lucide-react";
+import { MoreHorizontal, Trash, Pencil, Copy } from "lucide-react";
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
@@ -58,8 +58,8 @@ export const columns: ColumnDef<User>[] = [
               Update User
             </DropdownMenuItem>
             <DropdownMenuItem>
-              <Delete />
-              Delete User
+              <Trash />
+              Trash User
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
