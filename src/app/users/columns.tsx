@@ -44,11 +44,19 @@ export const columns: ColumnDef<User>[] = [
     ),
   },
   {
+    accessorKey: "cuid",
+    header: "Id",
+    size: 50,
+    maxSize: 50,
+  },
+  {
     accessorKey: "username",
     header: "Username",
+    size: 50,
   },
   {
     accessorKey: "email",
+    size: 50,
     header: ({ column }) => {
       return (
         <Button

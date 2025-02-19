@@ -1,23 +1,17 @@
+"use client";
+
 import { DataTable } from "@/app/users/data-table";
-import { columns, User } from "@/app/users/columns";
+import { columns } from "@/app/users/columns";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
-async function getData(): Promise<User[]> {
-  // Fetch data from your API here.
-  return [
-    {
-      id: "728ed52f",
-      username: "linguini",
-      email: "m@example.com",
-    },
-  ];
-}
+const queryClient = new QueryClient();
 
-export default async function Users() {
-  const data = await getData();
-
+export default function Users() {
   return (
-    <div className="container mx-auto py-10">
-      <DataTable columns={columns} data={data} />
-    </div>
+    <QueryClientProvider client={queryClient}>
+      <div className="container mx-auto py-10">
+        <DataTable columns={columns} data={[]} />
+      </div>
+    </QueryClientProvider>
   );
 }
