@@ -1,4 +1,4 @@
-import { Calendar, Home, Inbox, Search, User } from "lucide-react";
+import { Home, User } from "lucide-react";
 
 import {
   Sidebar,
@@ -29,9 +29,9 @@ const settingsSections = [
   },
 ];
 
-export function AppSidebar() {
+export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
-    <Sidebar>
+    <Sidebar variant="inset" {...props}>
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel>Application</SidebarGroupLabel>
