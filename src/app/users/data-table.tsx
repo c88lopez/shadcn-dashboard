@@ -26,15 +26,14 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
-import { UserCreateSheet } from "@/app/users/create-sheet";
-import { User } from "@/app/users/columns";
-import { getClient, getUsers } from "@/lib/graphql";
+import { getGraphQLClient, getUsers } from "@/lib/graphql";
 import { useQuery } from "@tanstack/react-query";
 import {
   Skeleton,
   ButtonSkeleton,
   InputSkeleton,
 } from "@/components/ui/skeleton";
+import UserCreate from "@/app/users/ui/form";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -54,9 +53,7 @@ export function DataTable<TData, TValue>({
   const { isPending, data, error } = useQuery({
     queryKey: ["users"],
     queryFn: async () => {
-      const client = getClient();
-
-      const { data } = await client.query({
+      const { data } = await getGraphQLClient().query({
         query: getUsers,
       });
 
@@ -176,7 +173,7 @@ export function DataTable<TData, TValue>({
 
         <Separator orientation="vertical" className="mx-4 h-6" />
 
-        <UserCreateSheet />
+        <UserCreate />
       </div>
 
       {/* Table */}
