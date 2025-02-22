@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 
 import {
   ColumnDef,
@@ -26,23 +26,43 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
-import { getGraphQLClient, getUsers } from "@/lib/graphql";
-import { useQuery } from "@tanstack/react-query";
+import { getGraphQLClient, gqlGetUsers, gqlDeleteUser } from "@/lib/graphql";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   Skeleton,
   ButtonSkeleton,
   InputSkeleton,
 } from "@/components/ui/skeleton";
 import UserCreate from "@/app/users/ui/form";
+import { User } from "@/app/users/columns";
+import { toast } from "sonner";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+
+type ColumnFunction<TData, TValue> = ({
+  setDeleteUserAction,
+}: {
+  setDeleteUserAction: any;
+}) => ColumnDef<TData, TValue>[];
 
 interface DataTableProps<TData, TValue> {
-  columns: ColumnDef<TData, TValue>[];
+  columns: ColumnFunction<TData, TValue>;
   data: TData[];
 }
 
 export function DataTable<TData, TValue>({
   columns,
 }: DataTableProps<TData, TValue>) {
+  const client = useQueryClient();
+
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
@@ -54,16 +74,20 @@ export function DataTable<TData, TValue>({
     queryKey: ["users"],
     queryFn: async () => {
       const { data } = await getGraphQLClient().query({
-        query: getUsers,
+        query: gqlGetUsers,
       });
 
       return data.Users;
     },
   });
 
+  const [deleteUser, setDeleteUserAction] = React.useState<User | undefined>();
+  const [confirmedDeleteUser, setConfirmedDeleteUser] =
+    React.useState<boolean>(false);
+
   const table = useReactTable({
     data: data ?? [],
-    columns,
+    columns: columns({ setDeleteUserAction }),
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     onSortingChange: setSorting,
@@ -77,6 +101,27 @@ export function DataTable<TData, TValue>({
       rowSelection,
     },
   });
+
+  useEffect(() => {
+    if (confirmedDeleteUser && deleteUser) {
+      getGraphQLClient()
+        .mutate({
+          mutation: gqlDeleteUser,
+          variables: {
+            cuid: deleteUser.cuid,
+          },
+        })
+        .then(() => {
+          client.invalidateQueries({ queryKey: ["users"] }).then(() => {
+            toast.success("User deleted successfully.", {
+              description: `User ${deleteUser.email} has been deleted.`,
+            });
+            setDeleteUserAction(undefined);
+            setConfirmedDeleteUser(false);
+          });
+        });
+    }
+  }, [confirmedDeleteUser]);
 
   if (isPending) {
     return (
@@ -252,6 +297,27 @@ export function DataTable<TData, TValue>({
           Next
         </Button>
       </div>
+
+      {/* Delete confirmation alert dialog */}
+      <AlertDialog open={!!deleteUser}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will permanently delete your
+              account and remove your data from our servers.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setDeleteUserAction(undefined)}>
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction onClick={() => setConfirmedDeleteUser(true)}>
+              Continue
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

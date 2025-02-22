@@ -12,16 +12,24 @@ import {
 import { Button } from "@/components/ui/button";
 import { MoreHorizontal, Trash, Pencil, Copy, ArrowUpDown } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
+import React from "react";
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
 export type User = {
   id: string;
+  cuid: string;
   username: string;
   email: string;
 };
 
-export const columns: ColumnDef<User>[] = [
+type Arguments = {
+  setDeleteUserAction: (user: User) => void;
+};
+
+export const columns = ({
+  setDeleteUserAction,
+}: Arguments): ColumnDef<User>[] => [
   {
     id: "select",
     enableHiding: false,
@@ -94,7 +102,7 @@ export const columns: ColumnDef<User>[] = [
               <Pencil />
               Update User
             </DropdownMenuItem>
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setDeleteUserAction(user)}>
               <Trash />
               Trash User
             </DropdownMenuItem>

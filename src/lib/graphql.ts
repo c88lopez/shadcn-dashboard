@@ -1,6 +1,6 @@
 import { ApolloClient, InMemoryCache, gql } from "@apollo/client";
 
-export const getUsers = gql`
+export const gqlGetUsers = gql`
   query Users {
     Users {
       cuid
@@ -10,11 +10,19 @@ export const getUsers = gql`
   }
 `;
 
-export const createUser = gql`
+export const gqlCreateUser = gql`
   mutation CreateUser($createUserData: UserCreateInput!) {
     createUser(createUserData: $createUserData) {
       email
       username
+    }
+  }
+`;
+
+export const gqlDeleteUser = gql`
+  mutation DeleteUser($cuid: String!) {
+    deleteUser(cuid: $cuid) {
+      cuid
     }
   }
 `;

@@ -11,9 +11,10 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { createUser, getGraphQLClient } from "@/lib/graphql";
+import { gqlCreateUser, getGraphQLClient } from "@/lib/graphql";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Plus } from "lucide-react";
+import { toast } from "sonner";
 
 export type State = {
   errors?: {
@@ -31,10 +32,8 @@ export default function UserCreate() {
       const username = formData.get("username");
       const email = formData.get("email");
 
-      console.log({ username, email });
-
       const { data } = await getGraphQLClient().mutate({
-        mutation: createUser,
+        mutation: gqlCreateUser,
         variables: {
           createUserData: {
             username,
@@ -44,6 +43,8 @@ export default function UserCreate() {
       });
 
       client.invalidateQueries({ queryKey: ["users"] });
+
+      toast.success("User created successfully.");
       setSheetOpen(false);
 
       return data;
