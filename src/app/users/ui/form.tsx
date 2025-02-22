@@ -1,6 +1,6 @@
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import React, { useActionState } from "react";
+import React from "react";
 import {
   Sheet,
   SheetContent,
@@ -51,15 +51,7 @@ export default function UserCreate() {
     },
   });
 
-  const createUserAction = async (prevState: State, formData: FormData) => {
-    mutation.mutate(formData);
-  };
-
-  const initialState: State = { message: null, errors: {} };
-
   const [sheetOpen, setSheetOpen] = React.useState(false);
-
-  const [state, formAction] = useActionState(createUserAction, initialState);
 
   return (
     <>
@@ -72,7 +64,11 @@ export default function UserCreate() {
         </SheetTrigger>
 
         <SheetContent>
-          <form action={formAction}>
+          <form
+            action={(formData) => {
+              mutation.mutate(formData);
+            }}
+          >
             <SheetHeader>
               <SheetTitle>Create user</SheetTitle>
               <SheetDescription>Create a new user.</SheetDescription>
