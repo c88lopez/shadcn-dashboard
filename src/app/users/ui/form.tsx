@@ -32,7 +32,17 @@ export default function UserSheetForm({ ...props }: ComponentProperties) {
       const email = formData.get("email");
 
       let gql = gqlCreateUser;
-      let variables: any = {
+      let variables: {
+        createUserData?: {
+          username: FormDataEntryValue | null;
+          email: FormDataEntryValue | null;
+        };
+        cuid?: string;
+        updateUserData?: {
+          username: FormDataEntryValue | null;
+          email: FormDataEntryValue | null;
+        };
+      } = {
         createUserData: {
           username,
           email,
