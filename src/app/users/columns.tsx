@@ -24,10 +24,14 @@ export type User = {
 };
 
 type Arguments = {
+  setSheetFormOpen: (open: boolean) => void;
+  setUpdateUserAction: (user: User) => void;
   setDeleteUserAction: (user: User) => void;
 };
 
 export const columns = ({
+  setSheetFormOpen,
+  setUpdateUserAction,
   setDeleteUserAction,
 }: Arguments): ColumnDef<User>[] => [
   {
@@ -98,7 +102,12 @@ export const columns = ({
 
             <DropdownMenuSeparator />
 
-            <DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => {
+                setUpdateUserAction(user);
+                setSheetFormOpen(true);
+              }}
+            >
               <Pencil />
               Update User
             </DropdownMenuItem>

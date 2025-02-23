@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { Dispatch, SetStateAction, useEffect } from "react";
 
 import {
   ColumnDef,
@@ -33,7 +33,6 @@ import {
   ButtonSkeleton,
   InputSkeleton,
 } from "@/components/ui/skeleton";
-import UserCreate from "@/app/users/ui/form";
 import { User } from "@/app/users/columns";
 import { toast } from "sonner";
 import {
@@ -46,11 +45,17 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { Plus } from "lucide-react";
+import UserSheetForm from "@/app/users/ui/form";
 
 type ColumnFunction<TData, TValue> = ({
+  setSheetFormOpen,
+  setUpdateUserAction,
   setDeleteUserAction,
 }: {
-  setDeleteUserAction: any;
+  setSheetFormOpen: Dispatch<SetStateAction<boolean>>;
+  setUpdateUserAction: Dispatch<SetStateAction<User | undefined>>;
+  setDeleteUserAction: Dispatch<SetStateAction<User | undefined>>;
 }) => ColumnDef<TData, TValue>[];
 
 interface DataTableProps<TData, TValue> {
@@ -70,7 +75,7 @@ export function DataTable<TData, TValue>({
 
   const [rowSelection, setRowSelection] = React.useState({});
 
-  const { isPending, data, error } = useQuery({
+  const { isPending, data } = useQuery({
     queryKey: ["users"],
     queryFn: async () => {
       const { data } = await getGraphQLClient().query({
@@ -81,13 +86,21 @@ export function DataTable<TData, TValue>({
     },
   });
 
+  const [sheetFormOpen, setSheetFormOpen] = React.useState(false);
+
+  const [updateUser, setUpdateUserAction] = React.useState<User | undefined>();
+
   const [deleteUser, setDeleteUserAction] = React.useState<User | undefined>();
   const [confirmedDeleteUser, setConfirmedDeleteUser] =
     React.useState<boolean>(false);
 
   const table = useReactTable({
     data: data ?? [],
-    columns: columns({ setDeleteUserAction }),
+    columns: columns({
+      setSheetFormOpen,
+      setUpdateUserAction,
+      setDeleteUserAction,
+    }),
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     onSortingChange: setSorting,
@@ -102,6 +115,7 @@ export function DataTable<TData, TValue>({
     },
   });
 
+  // Delete effect hook
   useEffect(() => {
     if (confirmedDeleteUser && deleteUser) {
       getGraphQLClient()
@@ -112,7 +126,7 @@ export function DataTable<TData, TValue>({
           },
         })
         .then(() => {
-          client.invalidateQueries({ queryKey: ["users"] }).then(() => {
+          return client.invalidateQueries({ queryKey: ["users"] }).then(() => {
             toast.success("User deleted successfully.", {
               description: `User ${deleteUser.email} has been deleted.`,
             });
@@ -203,6 +217,12 @@ export function DataTable<TData, TValue>({
 
   return (
     <div>
+      <UserSheetForm
+        user={updateUser}
+        sheetFormOpen={sheetFormOpen}
+        setSheetFormOpen={setSheetFormOpen}
+      />
+
       {/* Filter row*/}
       <div className="flex w-full items-center py-4">
         <Input
@@ -218,7 +238,10 @@ export function DataTable<TData, TValue>({
 
         <Separator orientation="vertical" className="mx-4 h-6" />
 
-        <UserCreate />
+        <Button variant="default" onClick={() => setSheetFormOpen(true)}>
+          Create
+          <Plus />
+        </Button>
       </div>
 
       {/* Table */}

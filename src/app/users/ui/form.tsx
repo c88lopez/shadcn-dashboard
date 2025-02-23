@@ -1,6 +1,8 @@
+import React from "react";
+import { toast } from "sonner";
+
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import React from "react";
 import {
   Sheet,
   SheetContent,
@@ -8,23 +10,20 @@ import {
   SheetFooter,
   SheetHeader,
   SheetTitle,
-  SheetTrigger,
 } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { gqlCreateUser, getGraphQLClient } from "@/lib/graphql";
+import { gqlCreateUser, getGraphQLClient, gqlUpdateUser } from "@/lib/graphql";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Plus } from "lucide-react";
-import { toast } from "sonner";
+import { User } from "@/app/users/columns";
 
-export type State = {
-  errors?: {
-    email?: string[];
-    username?: string[];
-  };
-  message?: string | null;
+type ComponentProperties = {
+  sheetFormOpen: boolean;
+  setSheetFormOpen: React.Dispatch<React.SetStateAction<boolean>>;
+
+  user?: User;
 };
 
-export default function UserCreate() {
+export default function UserSheetForm({ ...props }: ComponentProperties) {
   const client = useQueryClient();
 
   const mutation = useMutation({
@@ -32,37 +31,44 @@ export default function UserCreate() {
       const username = formData.get("username");
       const email = formData.get("email");
 
-      const { data } = await getGraphQLClient().mutate({
-        mutation: gqlCreateUser,
-        variables: {
-          createUserData: {
+      let gql = gqlCreateUser;
+      let variables: any = {
+        createUserData: {
+          username,
+          email,
+        },
+      };
+
+      if (props?.user) {
+        gql = gqlUpdateUser;
+        variables = {
+          cuid: props.user.cuid,
+          updateUserData: {
             username,
             email,
           },
-        },
+        };
+      }
+
+      const { data } = await getGraphQLClient().mutate({
+        mutation: gql,
+        variables,
       });
 
-      client.invalidateQueries({ queryKey: ["users"] });
+      await client.invalidateQueries({ queryKey: ["users"] });
 
-      toast.success("User created successfully.");
-      setSheetOpen(false);
+      toast.success(
+        `User ${props?.user ? "updated" : "created"} successfully.`,
+      );
+      props.setSheetFormOpen(false);
 
       return data;
     },
   });
 
-  const [sheetOpen, setSheetOpen] = React.useState(false);
-
   return (
     <>
-      <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
-        <SheetTrigger asChild>
-          <Button variant="default">
-            Create
-            <Plus />
-          </Button>
-        </SheetTrigger>
-
+      <Sheet open={props.sheetFormOpen} onOpenChange={props.setSheetFormOpen}>
         <SheetContent>
           <form
             action={(formData) => {
@@ -83,7 +89,7 @@ export default function UserCreate() {
                   required={true}
                   id="username"
                   name="username"
-                  defaultValue=""
+                  defaultValue={props?.user?.username}
                   className="col-span-3"
                 />
               </div>
@@ -95,14 +101,14 @@ export default function UserCreate() {
                   required={true}
                   id="email"
                   name="email"
-                  defaultValue=""
+                  defaultValue={props?.user?.email}
                   className="col-span-3"
                 />
               </div>
             </div>
 
             <SheetFooter>
-              <Button type="submit">Create</Button>
+              <Button type="submit">{props?.user ? "Update" : "Create"}</Button>
             </SheetFooter>
           </form>
         </SheetContent>
