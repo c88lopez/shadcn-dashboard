@@ -1,7 +1,7 @@
 "use client";
 
-import { DataTable } from "@/app/users/data-table";
-import { columns } from "@/app/users/columns";
+import { DataTable } from "@/app/(authenticated)/users/data-table";
+import { columns } from "@/app/(authenticated)/users/columns";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 const queryClient = new QueryClient();

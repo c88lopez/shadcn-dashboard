@@ -33,7 +33,7 @@ import {
   ButtonSkeleton,
   InputSkeleton,
 } from "@/components/ui/skeleton";
-import { User } from "@/app/users/columns";
+import { User } from "@/app/(authenticated)/users/columns";
 import { toast } from "sonner";
 import {
   AlertDialog,
@@ -46,7 +46,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Plus } from "lucide-react";
-import UserSheetForm from "@/app/users/ui/form";
+import UserSheetForm from "@/app/(authenticated)/users/ui/form";
 
 type ColumnFunction<TData, TValue> = ({
   setSheetFormOpen,

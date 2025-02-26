@@ -13,7 +13,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { gqlCreateUser, getGraphQLClient, gqlUpdateUser } from "@/lib/graphql";
 import { useQueryClient } from "@tanstack/react-query";
-import { User } from "@/app/users/columns";
+import { User } from "@/app/(authenticated)/users/columns";
 import { ApolloError } from "@apollo/client";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -47,8 +47,6 @@ export default function UserSheetForm({ ...props }: ComponentProperties) {
   const [serverError, setServerError] = React.useState<string | null>(null);
 
   const formSchema = UserSchema.omit({ cuid: true });
-
-  console.log({ props });
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -142,7 +140,7 @@ export default function UserSheetForm({ ...props }: ComponentProperties) {
                   <FormItem>
                     <FormLabel>Username</FormLabel>
                     <FormControl>
-                      <Input placeholder="wtf" {...field} />
+                      <Input placeholder="" {...field} />
                     </FormControl>
                     <FormDescription>
                       This is your public display name.

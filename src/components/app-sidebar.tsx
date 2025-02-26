@@ -3,6 +3,7 @@ import { Home, User } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
+  SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
@@ -11,6 +12,8 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import Link from "next/link";
+import { NavUser } from "@/components/ui/nav-user";
+import { auth } from "@/auth";
 
 // Menu items.
 const mainSections = [
@@ -69,6 +72,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
+      <SidebarFooter>
+        <NavUser
+          user={{ username: "clopez", email: "c88lopez@gmail.com", avatar: "" }}
+        />
+      </SidebarFooter>
     </Sidebar>
   );
 }
