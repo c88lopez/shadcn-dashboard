@@ -12,6 +12,7 @@ export default function LoginPage() {
           </div>
           Acme Inc.
         </a>
+
         <LoginForm />
       </div>
     </div>
