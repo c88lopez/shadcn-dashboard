@@ -1,7 +1,6 @@
 import React from "react";
 import { toast } from "sonner";
 
-import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import {
   Sheet,
@@ -13,8 +12,22 @@ import {
 } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { gqlCreateUser, getGraphQLClient, gqlUpdateUser } from "@/lib/graphql";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import { User } from "@/app/users/columns";
+import { ApolloError } from "@apollo/client";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { UserSchema } from "schemas";
+import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 
 type ComponentProperties = {
   sheetFormOpen: boolean;
@@ -23,44 +36,68 @@ type ComponentProperties = {
   user?: User;
 };
 
+type FormValues = {
+  username: FormDataEntryValue | null;
+  email: FormDataEntryValue | null;
+};
+
 export default function UserSheetForm({ ...props }: ComponentProperties) {
   const client = useQueryClient();
 
-  const mutation = useMutation({
-    mutationFn: async (formData: FormData) => {
-      const username = formData.get("username");
-      const email = formData.get("email");
+  const [serverError, setServerError] = React.useState<string | null>(null);
 
-      let gql = gqlCreateUser;
-      let variables: {
-        createUserData?: {
-          username: FormDataEntryValue | null;
-          email: FormDataEntryValue | null;
-        };
-        cuid?: string;
-        updateUserData?: {
-          username: FormDataEntryValue | null;
-          email: FormDataEntryValue | null;
-        };
-      } = {
-        createUserData: {
+  const formSchema = UserSchema.omit({ cuid: true });
+
+  console.log({ props });
+
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      username: props?.user?.username ?? "",
+      email: props?.user?.email ?? "",
+    },
+    values: {
+      username: props?.user?.username ?? "",
+      email: props?.user?.email ?? "",
+    },
+  });
+
+  const [submitting, setSubmitting] = React.useState(false);
+
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    setSubmitting(true);
+
+    const username = values.username;
+    const email = values.email;
+
+    let gql = gqlCreateUser;
+    let variables: {
+      createUserData?: {
+        username: FormDataEntryValue | null;
+        email: FormDataEntryValue | null;
+      };
+      cuid?: string;
+      updateUserData?: FormValues;
+    } = {
+      createUserData: {
+        username,
+        email,
+      },
+    };
+
+    if (props?.user) {
+      gql = gqlUpdateUser;
+      variables = {
+        cuid: props.user.cuid,
+        updateUserData: {
           username,
           email,
         },
       };
+    }
 
-      if (props?.user) {
-        gql = gqlUpdateUser;
-        variables = {
-          cuid: props.user.cuid,
-          updateUserData: {
-            username,
-            email,
-          },
-        };
-      }
-
-      const { data } = await getGraphQLClient().mutate({
+    try {
+      await getGraphQLClient().mutate({
         mutation: gql,
         variables,
       });
@@ -70,57 +107,75 @@ export default function UserSheetForm({ ...props }: ComponentProperties) {
       toast.success(
         `User ${props?.user ? "updated" : "created"} successfully.`,
       );
-      props.setSheetFormOpen(false);
 
-      return data;
-    },
-  });
+      props.setSheetFormOpen(false);
+    } catch (error) {
+      if (error instanceof ApolloError) {
+        setServerError(error.message);
+
+        return {
+          errors: {
+            email: error.message,
+          },
+        };
+      }
+    } finally {
+      setSubmitting(false);
+    }
+  }
 
   return (
     <>
       <Sheet open={props.sheetFormOpen} onOpenChange={props.setSheetFormOpen}>
         <SheetContent>
-          <form
-            action={(formData) => {
-              mutation.mutate(formData);
-            }}
-          >
-            <SheetHeader>
-              <SheetTitle>Create user</SheetTitle>
-              <SheetDescription>Create a new user.</SheetDescription>
-            </SheetHeader>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+              <SheetHeader>
+                <SheetTitle>Create user</SheetTitle>
+                <SheetDescription>Create a new user.</SheetDescription>
+              </SheetHeader>
 
-            <div className="grid gap-4 py-4">
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="username" className="text-right">
-                  Username
-                </Label>
-                <Input
-                  required={true}
-                  id="username"
-                  name="username"
-                  defaultValue={props?.user?.username}
-                  className="col-span-3"
-                />
-              </div>
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="email" className="text-right">
-                  Email
-                </Label>
-                <Input
-                  required={true}
-                  id="email"
-                  name="email"
-                  defaultValue={props?.user?.email}
-                  className="col-span-3"
-                />
-              </div>
-            </div>
+              <FormField
+                control={form.control}
+                name="username"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Username</FormLabel>
+                    <FormControl>
+                      <Input placeholder="wtf" {...field} />
+                    </FormControl>
+                    <FormDescription>
+                      This is your public display name.
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-            <SheetFooter>
-              <Button type="submit">{props?.user ? "Update" : "Create"}</Button>
-            </SheetFooter>
-          </form>
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Email</FormLabel>
+                    <FormControl>
+                      <Input placeholder="" {...field} />
+                    </FormControl>
+                    <FormDescription>This is your Email.</FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <SheetFooter>
+                <FormMessage className="">{serverError}</FormMessage>
+                <div className="min-w-10"></div>
+                <Button type="submit" disabled={submitting}>
+                  {props?.user ? "Update" : "Create"}
+                </Button>
+              </SheetFooter>
+            </form>
+          </Form>
         </SheetContent>
       </Sheet>
     </>
