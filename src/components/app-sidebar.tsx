@@ -1,3 +1,5 @@
+"use server";
+
 import { Home, User } from "lucide-react";
 
 import {
@@ -32,7 +34,11 @@ const settingsSections = [
   },
 ];
 
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+export async function AppSidebar({
+  ...props
+}: React.ComponentProps<typeof Sidebar>) {
+  const session = await auth();
+
   return (
     <Sidebar variant="inset" {...props}>
       <SidebarContent>
@@ -74,7 +80,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarContent>
       <SidebarFooter>
         <NavUser
-          user={{ username: "clopez", email: "c88lopez@gmail.com", avatar: "" }}
+          user={{
+            username: session?.user?.username ?? "",
+            email: session?.user?.email ?? "",
+            avatar: "",
+          }}
         />
       </SidebarFooter>
     </Sidebar>

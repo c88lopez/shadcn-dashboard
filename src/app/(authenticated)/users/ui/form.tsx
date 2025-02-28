@@ -11,52 +11,52 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { gqlCreateUser, getGraphQLClient, gqlUpdateUser } from "@/lib/graphql";
+import { getGraphQLClient, gqlCreateUser, gqlUpdateUser } from "@/lib/graphql";
 import { useQueryClient } from "@tanstack/react-query";
-import { User } from "@/app/(authenticated)/users/columns";
 import { ApolloError } from "@apollo/client";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { UserSchema } from "schemas";
+import { z, ZodObject } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-
-type ComponentProperties = {
-  sheetFormOpen: boolean;
-  setSheetFormOpen: React.Dispatch<React.SetStateAction<boolean>>;
-
-  user?: User;
-};
+import {
+  UserCreateSchema,
+  UserUpdateSchema,
+} from "../../../../../../schemas/src";
 
 type FormValues = {
   username: FormDataEntryValue | null;
   email: FormDataEntryValue | null;
+  password: FormDataEntryValue | null;
 };
 
-export default function UserSheetForm({ ...props }: ComponentProperties) {
+export default function UserSheetForm({ ...props }) {
   const client = useQueryClient();
 
   const [serverError, setServerError] = React.useState<string | null>(null);
 
-  const formSchema = UserSchema.omit({ cuid: true });
+  let formSchema: ZodObject<any> = UserCreateSchema;
+  if (props?.user) {
+    formSchema = UserUpdateSchema;
+  }
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       username: props?.user?.username ?? "",
       email: props?.user?.email ?? "",
+      password: "",
     },
     values: {
       username: props?.user?.username ?? "",
       email: props?.user?.email ?? "",
+      password: "",
     },
   });
 
@@ -67,19 +67,18 @@ export default function UserSheetForm({ ...props }: ComponentProperties) {
 
     const username = values.username;
     const email = values.email;
+    const password = values.password;
 
     let gql = gqlCreateUser;
     let variables: {
-      createUserData?: {
-        username: FormDataEntryValue | null;
-        email: FormDataEntryValue | null;
-      };
       cuid?: string;
+      createUserData?: FormValues;
       updateUserData?: FormValues;
     } = {
       createUserData: {
         username,
         email,
+        password,
       },
     };
 
@@ -90,6 +89,7 @@ export default function UserSheetForm({ ...props }: ComponentProperties) {
         updateUserData: {
           username,
           email,
+          password,
         },
       };
     }
@@ -106,7 +106,8 @@ export default function UserSheetForm({ ...props }: ComponentProperties) {
         `User ${props?.user ? "updated" : "created"} successfully.`,
       );
 
-      props.setSheetFormOpen(false);
+      props.setOpen(false);
+      form.reset();
     } catch (error) {
       if (error instanceof ApolloError) {
         setServerError(error.message);
@@ -124,7 +125,7 @@ export default function UserSheetForm({ ...props }: ComponentProperties) {
 
   return (
     <>
-      <Sheet open={props.sheetFormOpen} onOpenChange={props.setSheetFormOpen}>
+      <Sheet open={props.open} onOpenChange={props.setOpen}>
         <SheetContent>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
@@ -142,9 +143,6 @@ export default function UserSheetForm({ ...props }: ComponentProperties) {
                     <FormControl>
                       <Input placeholder="" {...field} />
                     </FormControl>
-                    <FormDescription>
-                      This is your public display name.
-                    </FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -159,7 +157,20 @@ export default function UserSheetForm({ ...props }: ComponentProperties) {
                     <FormControl>
                       <Input placeholder="" {...field} />
                     </FormControl>
-                    <FormDescription>This is your Email.</FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="password"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Password</FormLabel>
+                    <FormControl>
+                      <Input placeholder="" {...field} />
+                    </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}

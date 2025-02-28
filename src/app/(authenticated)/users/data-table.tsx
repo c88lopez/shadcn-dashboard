@@ -1,6 +1,6 @@
 "use client";
 
-import React, { Dispatch, SetStateAction, useEffect } from "react";
+import React from "react";
 
 import {
   ColumnDef,
@@ -26,37 +26,16 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
-import { getGraphQLClient, gqlGetUsers, gqlDeleteUser } from "@/lib/graphql";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { getGraphQLClient, gqlGetUsers } from "@/lib/graphql";
+import { useQuery } from "@tanstack/react-query";
 import {
-  Skeleton,
   ButtonSkeleton,
   InputSkeleton,
+  Skeleton,
 } from "@/components/ui/skeleton";
-import { User } from "@/app/(authenticated)/users/columns";
-import { toast } from "sonner";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
-import { Plus } from "lucide-react";
-import UserSheetForm from "@/app/(authenticated)/users/ui/form";
+import CreateButton from "@/app/(authenticated)/users/ui/create-button";
 
-type ColumnFunction<TData, TValue> = ({
-  setSheetFormOpen,
-  setUpdateUserAction,
-  setDeleteUserAction,
-}: {
-  setSheetFormOpen: Dispatch<SetStateAction<boolean>>;
-  setUpdateUserAction: Dispatch<SetStateAction<User | undefined>>;
-  setDeleteUserAction: Dispatch<SetStateAction<User | undefined>>;
-}) => ColumnDef<TData, TValue>[];
+type ColumnFunction<TData, TValue> = () => ColumnDef<TData, TValue>[];
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnFunction<TData, TValue>;
@@ -66,8 +45,6 @@ interface DataTableProps<TData, TValue> {
 export function DataTable<TData, TValue>({
   columns,
 }: DataTableProps<TData, TValue>) {
-  const client = useQueryClient();
-
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
@@ -86,21 +63,9 @@ export function DataTable<TData, TValue>({
     },
   });
 
-  const [sheetFormOpen, setSheetFormOpen] = React.useState(false);
-
-  const [updateUser, setUpdateUserAction] = React.useState<User | undefined>();
-
-  const [deleteUser, setDeleteUserAction] = React.useState<User | undefined>();
-  const [confirmedDeleteUser, setConfirmedDeleteUser] =
-    React.useState<boolean>(false);
-
   const table = useReactTable({
     data: data ?? [],
-    columns: columns({
-      setSheetFormOpen,
-      setUpdateUserAction,
-      setDeleteUserAction,
-    }),
+    columns: columns(),
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     onSortingChange: setSorting,
@@ -114,28 +79,6 @@ export function DataTable<TData, TValue>({
       rowSelection,
     },
   });
-
-  // Delete effect hook
-  useEffect(() => {
-    if (confirmedDeleteUser && deleteUser) {
-      getGraphQLClient()
-        .mutate({
-          mutation: gqlDeleteUser,
-          variables: {
-            cuid: deleteUser.cuid,
-          },
-        })
-        .then(() => {
-          return client.invalidateQueries({ queryKey: ["users"] }).then(() => {
-            toast.success("User deleted successfully.", {
-              description: `User ${deleteUser.email} has been deleted.`,
-            });
-            setDeleteUserAction(undefined);
-            setConfirmedDeleteUser(false);
-          });
-        });
-    }
-  }, [confirmedDeleteUser]);
 
   if (isPending) {
     return (
@@ -217,12 +160,6 @@ export function DataTable<TData, TValue>({
 
   return (
     <div>
-      <UserSheetForm
-        user={updateUser}
-        sheetFormOpen={sheetFormOpen}
-        setSheetFormOpen={setSheetFormOpen}
-      />
-
       {/* Filter row*/}
       <div className="flex w-full items-center py-4">
         <Input
@@ -238,10 +175,7 @@ export function DataTable<TData, TValue>({
 
         <Separator orientation="vertical" className="mx-4 h-6" />
 
-        <Button variant="default" onClick={() => setSheetFormOpen(true)}>
-          Create
-          <Plus />
-        </Button>
+        <CreateButton />
       </div>
 
       {/* Table */}
@@ -320,27 +254,6 @@ export function DataTable<TData, TValue>({
           Next
         </Button>
       </div>
-
-      {/* Delete confirmation alert dialog */}
-      <AlertDialog open={!!deleteUser}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-            <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete your
-              account and remove your data from our servers.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => setDeleteUserAction(undefined)}>
-              Cancel
-            </AlertDialogCancel>
-            <AlertDialogAction onClick={() => setConfirmedDeleteUser(true)}>
-              Continue
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
     </div>
   );
 }

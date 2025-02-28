@@ -1,20 +1,34 @@
-import NextAuth from "next-auth";
+import NextAuth, { User } from "next-auth";
 import { authConfig } from "./auth.config";
 import Credentials from "next-auth/providers/credentials";
 import { z } from "zod";
-// import type { User } from "@/app/lib/definitions";
-// import bcrypt from "bcrypt";
+import { CredentialsSignin } from "@auth/core/errors";
 
-async function getUser(email: string) {
-  const validEmail = "admin@vandelay-labs.com";
+async function getUser(email: string, password: string) {
+  const authLoginResponse = await fetch("http://localhost:3001/auth/login", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email, password }),
+  });
 
-  if (email !== validEmail) {
-    return null;
+  if (authLoginResponse.status === 401) {
+    throw new CredentialsSignin("Invalid credentials");
   }
 
+  const { access_token: accessToken } = await authLoginResponse.json();
+
+  const profileResponse = await fetch("http://localhost:3001/profile", {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+
+  const profile = await profileResponse.json();
+
   return {
-    username: "admin",
-    email: validEmail,
+    accessToken,
+    email: profile.email,
+    username: profile.username,
   };
 }
 
@@ -28,8 +42,8 @@ export const { auth, signIn, signOut } = NextAuth({
           .safeParse(credentials);
 
         if (parsedCredentials.success) {
-          const { email } = parsedCredentials.data;
-          const user = await getUser(email);
+          const { email, password } = parsedCredentials.data;
+          const user = await getUser(email, password);
 
           if (!user) return null;
 
@@ -40,4 +54,22 @@ export const { auth, signIn, signOut } = NextAuth({
       },
     }),
   ],
+  callbacks: {
+    jwt: async ({ token, user }) => {
+      if (!user) {
+        return token;
+      }
+
+      return {
+        ...token,
+        accessToken: (user as unknown as User & { accessToken: string })
+          .accessToken,
+      };
+    },
+    session: async ({ token }) => {
+      // console.log("token", token);
+
+      return token;
+    },
+  },
 });
