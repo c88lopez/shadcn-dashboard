@@ -1,9 +1,8 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 
 import {
-  ColumnDef,
   ColumnFiltersState,
   flexRender,
   getCoreRowModel,
@@ -22,25 +21,23 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
-import { getGraphQLClient, gqlGetUsers } from "@/lib/graphql";
-import { useQuery } from "@tanstack/react-query";
 import CreateButton from "@/app/(authenticated)/users/ui/create-button";
 import DataTableSkeleton from "@/app/(authenticated)/users/ui/data-table-skeleton";
+import Pagination from "@/app/(authenticated)/users/ui/pagination";
+import { columns } from "@/app/(authenticated)/users/columns";
+import { gqlGetUsers } from "@/lib/api/queries/users";
+import ApiClient from "@/lib/api/client";
 
-type ColumnFunction<TData, TValue> = () => ColumnDef<TData, TValue>[];
+export function DataTable({ ...props }) {
+  console.log(props.accessToken);
 
-interface DataTableProps<TData, TValue> {
-  columns: ColumnFunction<TData, TValue>;
-  data: TData[];
-}
+  const apiClient = new ApiClient(props.accessToken);
 
-export function DataTable<TData, TValue>({
-  columns,
-}: DataTableProps<TData, TValue>) {
+  const [data, setData] = React.useState([]);
+  const [isPending, setIsPending] = React.useState(true);
+
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
@@ -48,19 +45,21 @@ export function DataTable<TData, TValue>({
 
   const [rowSelection, setRowSelection] = React.useState({});
 
-  const { isPending, data } = useQuery({
-    queryKey: ["users"],
-    queryFn: async () => {
-      const { data } = await getGraphQLClient().query({
+  useEffect(() => {
+    apiClient
+      .query({
         query: gqlGetUsers,
-      });
+      })
+      .then((result) => {
+        const { data } = result;
 
-      return data.Users;
-    },
-  });
+        setData(data.Users);
+        setIsPending(false);
+      });
+  }, []);
 
   const table = useReactTable({
-    data: data ?? [],
+    data,
     columns: columns(),
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
@@ -153,29 +152,7 @@ export function DataTable<TData, TValue>({
       </div>
 
       {/* Pagination */}
-      <div className="flex items-center justify-end space-x-2 py-4">
-        <div className="flex-1 text-sm text-muted-foreground">
-          {table.getFilteredSelectedRowModel().rows.length} of{" "}
-          {table.getFilteredRowModel().rows.length} row(s) selected.
-        </div>
-
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => table.previousPage()}
-          disabled={!table.getCanPreviousPage()}
-        >
-          Previous
-        </Button>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => table.nextPage()}
-          disabled={!table.getCanNextPage()}
-        >
-          Next
-        </Button>
-      </div>
+      <Pagination table={table} />
     </div>
   );
 }

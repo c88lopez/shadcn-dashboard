@@ -11,8 +11,7 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { getGraphQLClient, gqlCreateUser, gqlUpdateUser } from "@/lib/graphql";
-import { useQueryClient } from "@tanstack/react-query";
+import { gqlCreateUser, gqlUpdateUser } from "@/lib/api/queries/users";
 import { ApolloError } from "@apollo/client";
 import { useForm } from "react-hook-form";
 import { z, ZodObject } from "zod";
@@ -25,10 +24,8 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import {
-  UserCreateSchema,
-  UserUpdateSchema,
-} from "../../../../../../schemas/src";
+import { UserCreateSchema, UserUpdateSchema } from "schemas";
+import ApiClient from "@/lib/api/client";
 
 type FormValues = {
   username: FormDataEntryValue | null;
@@ -37,8 +34,6 @@ type FormValues = {
 };
 
 export default function UserSheetForm({ ...props }) {
-  const client = useQueryClient();
-
   const [serverError, setServerError] = React.useState<string | null>(null);
 
   let formSchema: ZodObject<any> = UserCreateSchema;
@@ -95,7 +90,9 @@ export default function UserSheetForm({ ...props }) {
     }
 
     try {
-      await getGraphQLClient().mutate({
+      const apiClient = new ApiClient();
+
+      apiClient.mutate({
         mutation: gql,
         variables,
       });

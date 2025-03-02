@@ -16,6 +16,7 @@ import {
 import Link from "next/link";
 import { NavUser } from "@/components/ui/nav-user";
 import { auth } from "@/auth";
+import { redirect } from "next/navigation";
 
 // Menu items.
 const mainSections = [
@@ -34,10 +35,41 @@ const settingsSections = [
   },
 ];
 
+const isJWTExpired = (accessToken: string) => {
+  if (!accessToken) {
+    return true;
+  }
+
+  const accessTokenPayload = accessToken
+    .split(".")[1]
+    .replace("-", "+")
+    .replace("_", "/");
+
+  const data = JSON.parse(
+    Buffer.from(accessTokenPayload, "base64").toString("utf-8"),
+  );
+
+  const secondsLeft = Math.floor(data.exp - new Date().getTime() / 1000);
+
+  return secondsLeft <= 3585;
+};
+
 export async function AppSidebar({
   ...props
 }: React.ComponentProps<typeof Sidebar>) {
   const session = await auth();
+
+  if (isJWTExpired(session?.user?.id ?? "")) {
+    redirect("/login");
+  }
+
+  const profileResponse = await fetch("http://localhost:3001/profile", {
+    headers: { Authorization: `Bearer ${session?.user?.id}` },
+  });
+
+  const response = await profileResponse.json();
+
+  console.log({ response });
 
   return (
     <Sidebar variant="inset" {...props}>
@@ -81,8 +113,8 @@ export async function AppSidebar({
       <SidebarFooter>
         <NavUser
           user={{
-            username: session?.user?.username ?? "",
-            email: session?.user?.email ?? "",
+            username: response.username,
+            email: response.email,
             avatar: "",
           }}
         />

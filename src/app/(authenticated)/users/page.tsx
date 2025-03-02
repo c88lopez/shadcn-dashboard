@@ -1,17 +1,14 @@
-"use client";
-
 import { DataTable } from "@/app/(authenticated)/users/data-table";
-import { columns } from "@/app/(authenticated)/users/columns";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { auth } from "@/auth";
 
-const queryClient = new QueryClient();
+export default async function Users() {
+  const session = await auth();
 
-export default function Users() {
+  console.log(session);
+
   return (
-    <QueryClientProvider client={queryClient}>
-      <div className="container mx-auto py-10">
-        <DataTable columns={columns} data={[]} />
-      </div>
-    </QueryClientProvider>
+    <div className="container mx-auto py-10">
+      <DataTable accessToken={session?.user?.id} />
+    </div>
   );
 }

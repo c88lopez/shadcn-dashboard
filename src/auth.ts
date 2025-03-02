@@ -17,19 +17,7 @@ async function getUser(email: string, password: string) {
 
   const { access_token: accessToken } = await authLoginResponse.json();
 
-  const profileResponse = await fetch("http://localhost:3001/profile", {
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-    },
-  });
-
-  const profile = await profileResponse.json();
-
-  return {
-    accessToken,
-    email: profile.email,
-    username: profile.username,
-  };
+  return { id: accessToken };
 }
 
 export const { auth, signIn, signOut } = NextAuth({
@@ -66,10 +54,11 @@ export const { auth, signIn, signOut } = NextAuth({
           .accessToken,
       };
     },
-    session: async ({ token }) => {
-      // console.log("token", token);
-
-      return token;
+    session: async ({ session, token }) => {
+      return {
+        ...session,
+        user: { ...session.user, id: token.sub },
+      };
     },
   },
 });

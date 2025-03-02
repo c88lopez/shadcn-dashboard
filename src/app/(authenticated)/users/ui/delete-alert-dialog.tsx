@@ -9,19 +9,19 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import React, { useEffect } from "react";
-import { getGraphQLClient, gqlDeleteUser } from "@/lib/graphql";
+import { gqlDeleteUser } from "@/lib/api/queries/users";
 import { toast } from "sonner";
-import { useQueryClient } from "@tanstack/react-query";
+import ApiClient from "@/lib/api/client";
 
 export default function DeleteAlertDialog({ ...props }) {
-  const client = useQueryClient();
-
   const [confirmedDeleteUser, setConfirmedDeleteUser] =
     React.useState<boolean>(false);
 
   useEffect(() => {
     if (confirmedDeleteUser && props.user) {
-      getGraphQLClient()
+      const apiClient = new ApiClient();
+
+      apiClient
         .mutate({
           mutation: gqlDeleteUser,
           variables: {
