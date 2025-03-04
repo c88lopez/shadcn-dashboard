@@ -29,10 +29,9 @@ import Pagination from "@/app/(authenticated)/users/ui/pagination";
 import { columns } from "@/app/(authenticated)/users/columns";
 import { gqlGetUsers } from "@/lib/api/queries/users";
 import ApiClient from "@/lib/api/client";
+import { redirect } from "next/navigation";
 
 export function DataTable({ ...props }) {
-  console.log(props.accessToken);
-
   const apiClient = new ApiClient(props.accessToken);
 
   const [data, setData] = React.useState([]);
@@ -55,6 +54,12 @@ export function DataTable({ ...props }) {
 
         setData(data.Users);
         setIsPending(false);
+      })
+      .catch((error) => {
+        if (error.message === "Unauthorized") {
+          // Redirect to login page.
+          redirect("/login");
+        }
       });
   }, []);
 

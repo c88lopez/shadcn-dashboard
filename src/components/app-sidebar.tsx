@@ -49,9 +49,7 @@ const isJWTExpired = (accessToken: string) => {
     Buffer.from(accessTokenPayload, "base64").toString("utf-8"),
   );
 
-  const secondsLeft = Math.floor(data.exp - new Date().getTime() / 1000);
-
-  return secondsLeft <= 3585;
+  return Math.floor(data.exp - new Date().getTime() / 1000) <= 0;
 };
 
 export async function AppSidebar({
@@ -68,8 +66,6 @@ export async function AppSidebar({
   });
 
   const response = await profileResponse.json();
-
-  console.log({ response });
 
   return (
     <Sidebar variant="inset" {...props}>
