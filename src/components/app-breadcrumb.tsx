@@ -33,8 +33,6 @@ export default function AppBreadcrumb() {
 
   const title = getCurrentTitle(pathname);
 
-  console.log({ pathname, title });
-
   return (
     <Breadcrumb>
       <BreadcrumbList>
