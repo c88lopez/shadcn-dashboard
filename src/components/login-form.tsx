@@ -49,6 +49,7 @@ export function LoginForm({
                   </svg>
                   Login with Apple
                 </Button>
+
                 <Button variant="outline" className="w-full">
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                     <path
@@ -64,6 +65,7 @@ export function LoginForm({
                   Or continue with
                 </span>
               </div>
+
               <div className="grid gap-6">
                 {errorMessage && (
                   <>
@@ -90,6 +92,7 @@ export function LoginForm({
                       Forgot your password?
                     </a>
                   </div>
+
                   <Input
                     id="password"
                     type="password"
@@ -119,6 +122,7 @@ export function LoginForm({
           </form>
         </CardContent>
       </Card>
+
       <div className="text-balance text-center text-xs text-muted-foreground [&_a]:underline [&_a]:underline-offset-4 [&_a]:hover:text-primary  ">
         By clicking continue, you agree to our <a href="#">Terms of Service</a>{" "}
         and <a href="#">Privacy Policy</a>.
