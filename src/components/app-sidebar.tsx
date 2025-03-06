@@ -1,7 +1,5 @@
 "use server";
 
-import { Home, User } from "lucide-react";
-
 import {
   Sidebar,
   SidebarContent,
@@ -17,23 +15,7 @@ import Link from "next/link";
 import { NavUser } from "@/components/ui/nav-user";
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
-
-// Menu items.
-const mainSections = [
-  {
-    title: "Home",
-    url: "/",
-    icon: Home,
-  },
-];
-
-const settingsSections = [
-  {
-    title: "Users",
-    url: "/users",
-    icon: User,
-  },
-];
+import { Sections } from "@/components/app-sections";
 
 const isJWTExpired = (accessToken: string) => {
   if (!accessToken) {
@@ -70,42 +52,27 @@ export async function AppSidebar({
   return (
     <Sidebar variant="inset" {...props}>
       <SidebarContent>
-        <SidebarGroup>
-          <SidebarGroupLabel>Application</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {mainSections.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
-                    <Link href={item.url}>
-                      <item.icon />
-                      <span>{item.title}</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-
-        <SidebarGroup>
-          <SidebarGroupLabel>Settings</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {settingsSections.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
-                    <Link href={item.url}>
-                      <item.icon />
-                      <span>{item.title}</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
+        {Sections.map((section) => (
+          <SidebarGroup key={section.groupName}>
+            <SidebarGroupLabel>{section.groupName}</SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {section.groupItems.map((item) => (
+                  <SidebarMenuItem key={item.title}>
+                    <SidebarMenuButton asChild>
+                      <Link href={item.url}>
+                        <item.icon />
+                        <span>{item.title}</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        ))}
       </SidebarContent>
+
       <SidebarFooter>
         <NavUser
           user={{
