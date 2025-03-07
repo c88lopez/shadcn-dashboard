@@ -11,7 +11,6 @@ import {
 import React, { useEffect } from "react";
 import { gqlDeleteUser } from "@/lib/api/queries/users";
 import { toast } from "sonner";
-import ApiClient from "@/lib/api/client";
 
 export default function DeleteAlertDialog({ ...props }) {
   const [confirmedDeleteUser, setConfirmedDeleteUser] =
@@ -19,9 +18,7 @@ export default function DeleteAlertDialog({ ...props }) {
 
   useEffect(() => {
     if (confirmedDeleteUser && props.user) {
-      const apiClient = new ApiClient();
-
-      apiClient
+      props.apiClient
         .mutate({
           mutation: gqlDeleteUser,
           variables: {
@@ -29,14 +26,14 @@ export default function DeleteAlertDialog({ ...props }) {
           },
         })
         .then(() => {
-          return client.invalidateQueries({ queryKey: ["users"] }).then(() => {
-            toast.success("User deleted successfully.", {
-              description: `User ${props.user.email} has been deleted.`,
-            });
+          props.setRefresh(true);
 
-            props.setAlertDialogOpen(false);
-            setConfirmedDeleteUser(false);
+          toast.success("User deleted successfully.", {
+            description: `User ${props.user.email} has been deleted.`,
           });
+
+          props.setAlertDialogOpen(false);
+          setConfirmedDeleteUser(false);
         });
     }
   }, [confirmedDeleteUser]);

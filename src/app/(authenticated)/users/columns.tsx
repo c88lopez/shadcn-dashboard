@@ -63,10 +63,16 @@ export const columns = (): ColumnDef<User>[] => [
   {
     id: "actions",
     enableHiding: false,
-    cell: ({ row }) => {
+    cell: ({ table, row }) => {
       const user = row.original;
 
-      return <UserDropdownMenu user={user} />;
+      return (
+        <UserDropdownMenu
+          user={user}
+          setRefresh={table.options.meta?.setRefresh ?? (() => {})}
+          apiClient={table.options.meta?.apiClient ?? {}}
+        />
+      );
     },
   },
 ];

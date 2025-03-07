@@ -30,12 +30,15 @@ import { columns } from "@/app/(authenticated)/users/columns";
 import { gqlGetUsers } from "@/lib/api/queries/users";
 import ApiClient from "@/lib/api/client";
 import { redirect } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { RefreshCcw } from "lucide-react";
 
 export function DataTable({ ...props }) {
   const apiClient = new ApiClient(props.accessToken);
 
   const [data, setData] = React.useState([]);
-  const [isPending, setIsPending] = React.useState(true);
+  const [isPending, setIsPending] = React.useState<boolean>(true);
+  const [refresh, setRefresh] = React.useState<boolean>(false);
 
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -45,23 +48,36 @@ export function DataTable({ ...props }) {
   const [rowSelection, setRowSelection] = React.useState({});
 
   useEffect(() => {
-    apiClient
-      .query({
-        query: gqlGetUsers,
-      })
-      .then((result) => {
-        const { data } = result;
-
-        setData(data.Users);
-        setIsPending(false);
-      })
-      .catch((error) => {
-        if (error.message === "Unauthorized") {
-          // Redirect to login page.
-          redirect("/login");
-        }
-      });
+    fetchData();
   }, []);
+
+  useEffect(() => {
+    console.log("useEffect refresh", refresh);
+    if (refresh) {
+      setTimeout(() => fetchData().then(() => setRefresh(false)), 0);
+    }
+  }, [refresh]);
+
+  async function fetchData() {
+    try {
+      apiClient
+        .query({
+          query: gqlGetUsers,
+        })
+        .then((result) => {
+          const { data } = result;
+
+          console.log("fetchData then data", data);
+
+          setData(data.Users);
+          setIsPending(false);
+        });
+    } catch (error) {
+      if (error.message === "Unauthorized") {
+        redirect("/login");
+      }
+    }
+  }
 
   const table = useReactTable({
     data,
@@ -78,6 +94,7 @@ export function DataTable({ ...props }) {
       columnFilters,
       rowSelection,
     },
+    meta: { setRefresh, apiClient },
   });
 
   if (isPending) {
@@ -99,9 +116,13 @@ export function DataTable({ ...props }) {
 
         <div className="flex w-full"></div>
 
+        <Button disabled={refresh} onClick={() => setRefresh(true)}>
+          <RefreshCcw />
+        </Button>
+
         <Separator orientation="vertical" className="mx-4 h-6" />
 
-        <CreateButton />
+        <CreateButton apiClient={apiClient} setRefresh={setRefresh} />
       </div>
 
       {/* Table */}

@@ -26,7 +26,7 @@ export default class ApiClient {
   }
 
   public async mutate({ mutation, variables }) {
-    this.client.mutate({
+    return this.client.mutate({
       mutation,
       variables,
     });

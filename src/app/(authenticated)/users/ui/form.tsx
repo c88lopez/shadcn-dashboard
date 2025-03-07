@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Dispatch } from "react";
 import { toast } from "sonner";
 
 import { Input } from "@/components/ui/input";
@@ -26,6 +26,7 @@ import {
 } from "@/components/ui/form";
 import { UserCreateSchema, UserUpdateSchema } from "schemas";
 import ApiClient from "@/lib/api/client";
+import { redirect } from "next/navigation";
 
 type FormValues = {
   username: FormDataEntryValue | null;
@@ -33,7 +34,19 @@ type FormValues = {
   password: FormDataEntryValue | null;
 };
 
-export default function UserSheetForm({ ...props }) {
+type UserSheetFormProps = {
+  open: boolean;
+  setOpen: (open: boolean) => void;
+  apiClient: ApiClient;
+  setRefresh: Dispatch<boolean>;
+  user?: {
+    cuid: string;
+    username: string;
+    email: string;
+  };
+};
+
+export default function UserSheetForm({ ...props }: UserSheetFormProps) {
   const [serverError, setServerError] = React.useState<string | null>(null);
 
   let formSchema: ZodObject<any> = UserCreateSchema;
@@ -90,22 +103,26 @@ export default function UserSheetForm({ ...props }) {
     }
 
     try {
-      const apiClient = new ApiClient();
+      props.apiClient
+        .mutate({
+          mutation: gql,
+          variables,
+        })
+        .then(() => {
+          props.setRefresh(true);
 
-      apiClient.mutate({
-        mutation: gql,
-        variables,
-      });
+          toast.success(
+            `User ${props?.user ? "updated" : "created"} successfully.`,
+          );
 
-      await client.invalidateQueries({ queryKey: ["users"] });
-
-      toast.success(
-        `User ${props?.user ? "updated" : "created"} successfully.`,
-      );
-
-      props.setOpen(false);
-      form.reset();
+          props.setOpen(false);
+          form.reset();
+        });
     } catch (error) {
+      if (error.message === "Unauthorized") {
+        redirect("/login");
+      }
+
       if (error instanceof ApolloError) {
         setServerError(error.message);
 
@@ -166,7 +183,7 @@ export default function UserSheetForm({ ...props }) {
                   <FormItem>
                     <FormLabel>Password</FormLabel>
                     <FormControl>
-                      <Input placeholder="" {...field} />
+                      <Input placeholder="" {...field} type="password" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

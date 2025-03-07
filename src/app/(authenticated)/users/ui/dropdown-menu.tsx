@@ -55,12 +55,16 @@ export default function UserDropdownMenu({ ...props }) {
         open={sheetFormOpen}
         setOpen={setSheetFormOpen}
         user={user}
+        setRefresh={props.setRefresh}
+        apiClient={props.apiClient}
       />
 
       <DeleteAlertDialog
         open={alertDialogOpen}
         setAlertDialogOpen={setAlertDialogOpen}
         user={user}
+        setRefresh={props.setRefresh}
+        apiClient={props.apiClient}
       />
     </DropdownMenu>
   );
