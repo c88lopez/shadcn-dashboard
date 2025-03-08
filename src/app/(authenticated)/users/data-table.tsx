@@ -52,9 +52,8 @@ export function DataTable({ ...props }) {
   }, []);
 
   useEffect(() => {
-    console.log("useEffect refresh", refresh);
     if (refresh) {
-      setTimeout(() => fetchData().then(() => setRefresh(false)), 0);
+      fetchData().then(() => setRefresh(false));
     }
   }, [refresh]);
 
@@ -66,8 +65,6 @@ export function DataTable({ ...props }) {
         })
         .then((result) => {
           const { data } = result;
-
-          console.log("fetchData then data", data);
 
           setData(data.Users);
           setIsPending(false);
