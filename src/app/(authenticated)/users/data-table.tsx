@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { Dispatch, useEffect } from "react";
 
 import {
   ColumnFiltersState,
@@ -32,6 +32,16 @@ import ApiClient from "@/lib/api/client";
 import { redirect } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { RefreshCcw } from "lucide-react";
+import { ApolloError } from "@apollo/client";
+import { RowData } from "@tanstack/table-core";
+
+declare module "@tanstack/table-core" {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  interface TableMeta<TData extends RowData> {
+    setRefresh: Dispatch<boolean>;
+    apiClient: ApiClient;
+  }
+}
 
 export function DataTable({ ...props }) {
   const apiClient = new ApiClient(props.accessToken);
@@ -70,7 +80,7 @@ export function DataTable({ ...props }) {
           setIsPending(false);
         });
     } catch (error) {
-      if (error.message === "Unauthorized") {
+      if (error instanceof ApolloError && error.message === "Unauthorized") {
         redirect("/login");
       }
     }
@@ -86,11 +96,13 @@ export function DataTable({ ...props }) {
     onColumnFiltersChange: setColumnFilters,
     getFilteredRowModel: getFilteredRowModel(),
     onRowSelectionChange: setRowSelection,
+
     state: {
       sorting,
       columnFilters,
       rowSelection,
     },
+
     meta: { setRefresh, apiClient },
   });
 

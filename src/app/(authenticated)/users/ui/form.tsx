@@ -119,7 +119,7 @@ export default function UserSheetForm({ ...props }: UserSheetFormProps) {
           form.reset();
         });
     } catch (error) {
-      if (error.message === "Unauthorized") {
+      if (error instanceof ApolloError && error.message === "Unauthorized") {
         redirect("/login");
       }
 

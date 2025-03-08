@@ -1,4 +1,9 @@
-import { ApolloClient, InMemoryCache } from "@apollo/client";
+import { ApolloClient, DocumentNode, InMemoryCache } from "@apollo/client";
+import type { MutationOptions } from "@apollo/client/core/watchQueryOptions";
+
+type QueryParams = {
+  query: DocumentNode;
+};
 
 export default class ApiClient {
   private client: ApolloClient<any>;
@@ -17,15 +22,13 @@ export default class ApiClient {
     });
   };
 
-  public async query({ query }) {
-    const result = await this.client.query({
+  public query({ query }: QueryParams) {
+    return this.client.query({
       query,
     });
-
-    return result;
   }
 
-  public async mutate({ mutation, variables }) {
+  public mutate({ mutation, variables }: MutationOptions) {
     return this.client.mutate({
       mutation,
       variables,

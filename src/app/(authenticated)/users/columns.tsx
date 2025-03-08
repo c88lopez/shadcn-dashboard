@@ -6,6 +6,7 @@ import { ArrowUpDown } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import React from "react";
 import UserDropdownMenu from "@/app/(authenticated)/users/ui/dropdown-menu";
+import ApiClient from "@/lib/api/client";
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
@@ -14,6 +15,11 @@ export type User = {
   cuid: string;
   username: string;
   email: string;
+
+  meta?: {
+    setRefresh: (value: boolean) => void;
+    apiClient: ApiClient;
+  };
 };
 
 export const columns = (): ColumnDef<User>[] => [
