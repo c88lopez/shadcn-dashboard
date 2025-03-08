@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Copy, MoreHorizontal, Pencil, Trash } from "lucide-react";
 import DeleteAlertDialog from "@/app/(authenticated)/users/ui/delete-alert-dialog";
 import React from "react";
-import UserSheetForm from "@/app/(authenticated)/users/ui/form";
+import UserSheetForm from "@/app/(authenticated)/users/ui/forms/update";
 
 export default function UserDropdownMenu({ ...props }) {
   const user = props.user;

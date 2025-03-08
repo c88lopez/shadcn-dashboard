@@ -1,7 +1,7 @@
 import React, { Dispatch } from "react";
 
 import { Button } from "@/components/ui/button";
-import UserSheetForm from "@/app/(authenticated)/users/ui/form";
+import UserSheetForm from "@/app/(authenticated)/users/ui/forms/create";
 import { Plus } from "lucide-react";
 import ApiClient from "@/lib/api/client";
 

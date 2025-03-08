@@ -11,10 +11,10 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { gqlCreateUser, gqlUpdateUser } from "@/lib/api/queries/users";
+import { gqlCreateUser } from "@/lib/api/queries/users";
 import { ApolloError } from "@apollo/client";
 import { useForm } from "react-hook-form";
-import { z, ZodObject } from "zod";
+import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Form,
@@ -24,15 +24,9 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { UserCreateSchema, UserUpdateSchema } from "schemas";
+import { UserCreateSchema } from "schemas";
 import ApiClient from "@/lib/api/client";
 import { redirect } from "next/navigation";
-
-type FormValues = {
-  username: FormDataEntryValue | null;
-  email: FormDataEntryValue | null;
-  password: FormDataEntryValue | null;
-};
 
 type UserSheetFormProps = {
   open: boolean;
@@ -46,16 +40,11 @@ type UserSheetFormProps = {
   };
 };
 
-export default function UserSheetForm({ ...props }: UserSheetFormProps) {
+export default function UserCreateSheetForm({ ...props }: UserSheetFormProps) {
   const [serverError, setServerError] = React.useState<string | null>(null);
 
-  let formSchema: ZodObject<any> = UserCreateSchema;
-  if (props?.user) {
-    formSchema = UserUpdateSchema;
-  }
-
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<z.infer<typeof UserCreateSchema>>({
+    resolver: zodResolver(UserCreateSchema),
     defaultValues: {
       username: props?.user?.username ?? "",
       email: props?.user?.email ?? "",
@@ -70,37 +59,21 @@ export default function UserSheetForm({ ...props }: UserSheetFormProps) {
 
   const [submitting, setSubmitting] = React.useState(false);
 
-  async function onSubmit(values: z.infer<typeof formSchema>) {
+  async function onSubmit(values: z.infer<typeof UserCreateSchema>) {
     setSubmitting(true);
 
     const username = values.username;
     const email = values.email;
     const password = values.password;
 
-    let gql = gqlCreateUser;
-    let variables: {
-      cuid?: string;
-      createUserData?: FormValues;
-      updateUserData?: FormValues;
-    } = {
+    const gql = gqlCreateUser;
+    const variables = {
       createUserData: {
         username,
         email,
         password,
       },
     };
-
-    if (props?.user) {
-      gql = gqlUpdateUser;
-      variables = {
-        cuid: props.user.cuid,
-        updateUserData: {
-          username,
-          email,
-          password,
-        },
-      };
-    }
 
     try {
       props.apiClient
@@ -111,9 +84,7 @@ export default function UserSheetForm({ ...props }: UserSheetFormProps) {
         .then(() => {
           props.setRefresh(true);
 
-          toast.success(
-            `User ${props?.user ? "updated" : "created"} successfully.`,
-          );
+          toast.success(`User created successfully.`);
 
           props.setOpen(false);
           form.reset();
@@ -194,7 +165,7 @@ export default function UserSheetForm({ ...props }: UserSheetFormProps) {
                 <FormMessage className="">{serverError}</FormMessage>
                 <div className="min-w-10"></div>
                 <Button type="submit" disabled={submitting}>
-                  {props?.user ? "Update" : "Create"}
+                  Create
                 </Button>
               </SheetFooter>
             </form>
