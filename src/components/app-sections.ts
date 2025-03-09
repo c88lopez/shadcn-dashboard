@@ -1,4 +1,4 @@
-import { Home, LucideIcon, User } from "lucide-react";
+import { HardHat, Home, LucideIcon, User, Users } from "lucide-react";
 
 type Section = {
   groupName: string;
@@ -27,6 +27,16 @@ export const Sections: Section[] = [
         title: "Users",
         url: "/users",
         icon: User,
+      },
+      {
+        title: "Roles",
+        url: "/roles",
+        icon: HardHat,
+      },
+      {
+        title: "Teams",
+        url: "/teams",
+        icon: Users,
       },
     ],
   },
