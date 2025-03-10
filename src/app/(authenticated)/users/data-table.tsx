@@ -76,7 +76,7 @@ export function DataTable({ ...props }) {
         .then((result) => {
           const { data } = result;
 
-          setData(data.Users);
+          setData(data.users);
           setIsPending(false);
         });
     } catch (error) {
