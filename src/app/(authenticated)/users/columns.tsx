@@ -67,6 +67,15 @@ export const columns = (): ColumnDef<User>[] => [
     },
   },
   {
+    id: "teams",
+    header: "Teams",
+    cell: ({ row }) => {
+      const user = row.original;
+
+      return user.teams.length;
+    },
+  },
+  {
     id: "actions",
     enableHiding: false,
     cell: ({ table, row }) => {
@@ -77,6 +86,7 @@ export const columns = (): ColumnDef<User>[] => [
           user={user}
           setRefresh={table.options.meta?.setRefresh ?? (() => {})}
           apiClient={table.options.meta?.apiClient ?? {}}
+          teams={table.options.meta?.teams ?? []}
         />
       );
     },

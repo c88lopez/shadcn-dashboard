@@ -27,16 +27,24 @@ import {
 import { UserUpdateSchema } from "schemas";
 import ApiClient from "@/lib/api/client";
 import { redirect } from "next/navigation";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import MenuItem from "@/app/(authenticated)/users/ui/forms/menu-item";
 
 type UserSheetFormProps = {
   open: boolean;
   setOpen: (open: boolean) => void;
   apiClient: ApiClient;
   setRefresh: Dispatch<boolean>;
+  teams: { cuid: string; name: string }[];
   user: {
     cuid: string;
     username: string;
     email: string;
+    teams: { cuid: string; name: string }[];
   };
 };
 
@@ -59,6 +67,20 @@ export default function UserUpdateSheetForm({ ...props }: UserSheetFormProps) {
 
   const [submitting, setSubmitting] = React.useState(false);
 
+  const selectedTeams = React.useRef<string[]>(
+    props.user.teams.map((team) => team.cuid),
+  );
+
+  function updateSelectedTeams(teamCuid: string, add: boolean) {
+    if (add) {
+      selectedTeams.current.push(teamCuid);
+    } else {
+      selectedTeams.current = selectedTeams.current.filter(
+        (cuid) => cuid !== teamCuid,
+      );
+    }
+  }
+
   async function onSubmit(values: z.infer<typeof UserUpdateSchema>) {
     setSubmitting(true);
 
@@ -73,6 +95,7 @@ export default function UserUpdateSheetForm({ ...props }: UserSheetFormProps) {
         username,
         email,
         password,
+        teams: selectedTeams.current,
       },
     };
 
@@ -161,6 +184,31 @@ export default function UserUpdateSheetForm({ ...props }: UserSheetFormProps) {
                   </FormItem>
                 )}
               />
+
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline">Teams</Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="w-56">
+                  {props.teams.length === 0 ? (
+                    <MenuItem
+                      updateSelectedTeams={updateSelectedTeams}
+                      team={{ cuid: "", name: "No teams available" }}
+                      disabled={true}
+                      selectedTeams={selectedTeams}
+                    />
+                  ) : (
+                    props.teams.map((team) => (
+                      <MenuItem
+                        key={team.cuid}
+                        updateSelectedTeams={updateSelectedTeams}
+                        team={team}
+                        selectedTeams={selectedTeams}
+                      />
+                    ))
+                  )}
+                </DropdownMenuContent>
+              </DropdownMenu>
 
               <SheetFooter>
                 <FormMessage className="">{serverError}</FormMessage>

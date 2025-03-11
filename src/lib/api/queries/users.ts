@@ -10,8 +10,26 @@ export const gqlGetUsers = gql`
   }
 `;
 
+export const gqlGetUsersAndTeams = gql`
+  query Users {
+    users {
+      cuid
+      email
+      username
+      teams {
+        cuid
+        name
+      }
+    }
+    teams {
+      cuid
+      name
+    }
+  }
+`;
+
 export const gqlCreateUser = gql`
-  mutation CreateUser($createUserData: UserCreateInput!) {
+  mutation CreateUser($createUserData: CreateUserInput!) {
     createUser(createUserData: $createUserData) {
       cuid
       email
@@ -21,7 +39,7 @@ export const gqlCreateUser = gql`
 `;
 
 export const gqlUpdateUser = gql`
-  mutation UpdateUser($cuid: String!, $updateUserData: UserUpdateInput!) {
+  mutation UpdateUser($cuid: String!, $updateUserData: UpdateUserInput!) {
     updateUser(cuid: $cuid, updateUserData: $updateUserData) {
       cuid
       email

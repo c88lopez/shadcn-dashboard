@@ -27,12 +27,19 @@ import {
 import { UserCreateSchema } from "schemas";
 import ApiClient from "@/lib/api/client";
 import { redirect } from "next/navigation";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import MenuItem from "@/app/(authenticated)/users/ui/forms/menu-item";
 
 type UserSheetFormProps = {
   open: boolean;
   setOpen: (open: boolean) => void;
   apiClient: ApiClient;
   setRefresh: Dispatch<boolean>;
+  teams: { cuid: string; name: string }[];
   user?: {
     cuid: string;
     username: string;
@@ -59,6 +66,18 @@ export default function UserCreateSheetForm({ ...props }: UserSheetFormProps) {
 
   const [submitting, setSubmitting] = React.useState(false);
 
+  const selectedTeams = React.useRef<string[]>([]);
+
+  function updateSelectedTeams(teamCuid: string, add: boolean) {
+    if (add) {
+      selectedTeams.current.push(teamCuid);
+    } else {
+      selectedTeams.current = selectedTeams.current.filter(
+        (cuid) => cuid !== teamCuid,
+      );
+    }
+  }
+
   async function onSubmit(values: z.infer<typeof UserCreateSchema>) {
     setSubmitting(true);
 
@@ -67,13 +86,24 @@ export default function UserCreateSheetForm({ ...props }: UserSheetFormProps) {
     const password = values.password;
 
     const gql = gqlCreateUser;
-    const variables = {
+    const variables: {
+      createUserData: {
+        username: string;
+        email: string;
+        password: string;
+        teams?: string[];
+      };
+    } = {
       createUserData: {
         username,
         email,
         password,
       },
     };
+
+    if (selectedTeams.current.length > 0) {
+      variables.createUserData.teams = selectedTeams.current;
+    }
 
     try {
       props.apiClient
@@ -87,6 +117,7 @@ export default function UserCreateSheetForm({ ...props }: UserSheetFormProps) {
           toast.success(`User created successfully.`);
 
           props.setOpen(false);
+          selectedTeams.current = [];
           form.reset();
         });
     } catch (error) {
@@ -160,6 +191,31 @@ export default function UserCreateSheetForm({ ...props }: UserSheetFormProps) {
                   </FormItem>
                 )}
               />
+
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline">Teams</Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="w-56">
+                  {props.teams.length === 0 ? (
+                    <MenuItem
+                      updateSelectedTeams={updateSelectedTeams}
+                      team={{ cuid: "", name: "No teams available" }}
+                      disabled={true}
+                      selectedTeams={selectedTeams}
+                    />
+                  ) : (
+                    props.teams.map((team) => (
+                      <MenuItem
+                        key={team.cuid}
+                        updateSelectedTeams={updateSelectedTeams}
+                        team={team}
+                        selectedTeams={selectedTeams}
+                      />
+                    ))
+                  )}
+                </DropdownMenuContent>
+              </DropdownMenu>
 
               <SheetFooter>
                 <FormMessage className="">{serverError}</FormMessage>
