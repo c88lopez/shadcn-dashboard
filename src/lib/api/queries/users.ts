@@ -50,7 +50,7 @@ export const gqlUpdateUser = gql`
 
 export const gqlDeleteUser = gql`
   mutation DeleteUser($cuid: String!) {
-    deleteUser(cuid: $cuid) {
+    removeUser(cuid: $cuid) {
       cuid
     }
   }
