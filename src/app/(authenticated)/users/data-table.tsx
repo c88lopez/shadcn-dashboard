@@ -45,7 +45,7 @@ declare module "@tanstack/table-core" {
 }
 
 export function DataTable({ ...props }) {
-  const apiClient = new ApiClient(props.accessToken);
+  const apiClient = new ApiClient(props.graphqlServerUrl, props.accessToken);
 
   const [users, setUsers] = React.useState([]);
   const [teams, setTeams] = React.useState([]);

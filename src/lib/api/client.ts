@@ -6,15 +6,17 @@ type QueryParams = {
 };
 
 export default class ApiClient {
+  private graphqlServerUrl: string;
   private client: ApolloClient<any>;
 
-  constructor(accessToken: string) {
+  constructor(graphqlServerUrl: string, accessToken: string) {
+    this.graphqlServerUrl = graphqlServerUrl;
     this.client = this.getGraphQLClient(accessToken);
   }
 
   private getGraphQLClient = (accessToken: string) => {
     return new ApolloClient({
-      uri: "http://localhost:3001/graphql",
+      uri: this.graphqlServerUrl,
       cache: new InMemoryCache(),
       headers: {
         authorization: `Bearer ${accessToken}`,

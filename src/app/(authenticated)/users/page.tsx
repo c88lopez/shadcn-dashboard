@@ -3,10 +3,16 @@ import { auth } from "@/auth";
 
 export default async function Users() {
   const session = await auth();
+  const graphqlServerUrl = process.env.GRAPHQL_SERVER;
+
+  console.log(graphqlServerUrl);
 
   return (
     <div className="container mx-auto py-10">
-      <DataTable accessToken={session?.user?.id} />
+      <DataTable
+        graphqlServerUrl={graphqlServerUrl}
+        accessToken={session?.user?.id}
+      />
     </div>
   );
 }
