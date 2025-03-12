@@ -57,7 +57,6 @@ export default function UserDropdownMenu({ ...props }) {
         user={user}
         setRefresh={props.setRefresh}
         apiClient={props.apiClient}
-        teams={props.teams}
       />
 
       <DeleteAlertDialog

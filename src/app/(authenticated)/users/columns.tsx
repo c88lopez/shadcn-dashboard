@@ -82,7 +82,6 @@ export const columns = (): ColumnDef<User>[] => [
           user={user}
           setRefresh={table.options.meta?.setRefresh ?? (() => {})}
           apiClient={table.options.meta?.apiClient ?? {}}
-          teams={table.options.meta?.teams ?? []}
         />
       );
     },

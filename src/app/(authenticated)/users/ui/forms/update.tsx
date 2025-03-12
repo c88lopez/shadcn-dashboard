@@ -1,4 +1,4 @@
-import React, { Dispatch } from "react";
+import React, { Dispatch, useContext } from "react";
 import { toast } from "sonner";
 
 import { Input } from "@/components/ui/input";
@@ -33,13 +33,13 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import MenuItem from "@/app/(authenticated)/users/ui/forms/menu-item";
+import { TeamsContext } from "@/app/(authenticated)/users/contexts/teams";
 
 type UserSheetFormProps = {
   open: boolean;
   setOpen: (open: boolean) => void;
   apiClient: ApiClient;
   setRefresh: Dispatch<boolean>;
-  teams: Team[];
   user: {
     cuid: string;
     username: string;
@@ -66,6 +66,8 @@ export default function UserUpdateSheetForm({ ...props }: UserSheetFormProps) {
   });
 
   const [submitting, setSubmitting] = React.useState(false);
+
+  const teams = useContext(TeamsContext);
 
   const selectedTeams = React.useRef<string[]>(
     props.user.teams.map((team) => team.cuid),
@@ -190,7 +192,7 @@ export default function UserUpdateSheetForm({ ...props }: UserSheetFormProps) {
                   <Button variant="outline">Teams</Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className="w-56">
-                  {props.teams.length === 0 ? (
+                  {teams.length === 0 ? (
                     <MenuItem
                       updateSelectedTeams={updateSelectedTeams}
                       team={{ cuid: "", name: "No teams available" }}
@@ -198,7 +200,7 @@ export default function UserUpdateSheetForm({ ...props }: UserSheetFormProps) {
                       selectedTeams={selectedTeams}
                     />
                   ) : (
-                    props.teams.map((team) => (
+                    teams.map((team) => (
                       <MenuItem
                         key={team.cuid}
                         updateSelectedTeams={updateSelectedTeams}
