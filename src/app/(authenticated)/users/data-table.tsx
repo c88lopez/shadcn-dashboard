@@ -35,12 +35,14 @@ import { RefreshCcw } from "lucide-react";
 import { ApolloError } from "@apollo/client";
 import { RowData } from "@tanstack/table-core";
 
+import { Team } from "@vandelay-labs/schemas";
+
 declare module "@tanstack/table-core" {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   interface TableMeta<TData extends RowData> {
     setRefresh: Dispatch<boolean>;
     apiClient: ApiClient;
-    teams: { cuid: string; name: string }[];
+    teams: Team[];
   }
 }
 

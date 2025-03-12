@@ -24,7 +24,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { UserCreateSchema } from "schemas";
+import { UserCreateSchema } from "@vandelay-labs/schemas";
 import ApiClient from "@/lib/api/client";
 import { redirect } from "next/navigation";
 import {
