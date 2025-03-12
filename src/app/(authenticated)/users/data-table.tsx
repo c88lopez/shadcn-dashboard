@@ -40,7 +40,7 @@ declare module "@tanstack/table-core" {
   interface TableMeta<TData extends RowData> {
     setRefresh: Dispatch<boolean>;
     apiClient: ApiClient;
-    teams: any[];
+    teams: { cuid: string; name: string }[];
   }
 }
 

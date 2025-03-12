@@ -5,8 +5,6 @@ export default async function Users() {
   const session = await auth();
   const graphqlServerUrl = process.env.GRAPHQL_SERVER;
 
-  console.log(graphqlServerUrl);
-
   return (
     <div className="container mx-auto py-10">
       <DataTable
