@@ -8,6 +8,7 @@ import ApiClient from "@/lib/api/client";
 type CreateButtonProps = {
   apiClient: ApiClient;
   setRefresh: Dispatch<boolean>;
+  teams: { cuid: string; name: string }[];
 };
 
 export default function CreateButton({ ...props }: CreateButtonProps) {
@@ -25,6 +26,7 @@ export default function CreateButton({ ...props }: CreateButtonProps) {
         setRefresh={props.setRefresh}
         open={sheetFormOpen}
         setOpen={setSheetFormOpen}
+        teams={props.teams}
       />
     </div>
   );

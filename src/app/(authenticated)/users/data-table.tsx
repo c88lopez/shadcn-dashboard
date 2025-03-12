@@ -1,6 +1,7 @@
 "use client";
 
 import React, { Dispatch, useEffect } from "react";
+import { redirect } from "next/navigation";
 
 import {
   ColumnFiltersState,
@@ -27,9 +28,8 @@ import CreateButton from "@/app/(authenticated)/users/ui/create-button";
 import DataTableSkeleton from "@/app/(authenticated)/users/ui/data-table-skeleton";
 import Pagination from "@/app/(authenticated)/users/ui/pagination";
 import { columns } from "@/app/(authenticated)/users/columns";
-import { gqlGetUsers } from "@/lib/api/queries/users";
+import { gqlGetUsersAndTeams } from "@/lib/api/queries/users";
 import ApiClient from "@/lib/api/client";
-import { redirect } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { RefreshCcw } from "lucide-react";
 import { ApolloError } from "@apollo/client";
@@ -40,13 +40,15 @@ declare module "@tanstack/table-core" {
   interface TableMeta<TData extends RowData> {
     setRefresh: Dispatch<boolean>;
     apiClient: ApiClient;
+    teams: any[];
   }
 }
 
 export function DataTable({ ...props }) {
   const apiClient = new ApiClient(props.accessToken);
 
-  const [data, setData] = React.useState([]);
+  const [users, setUsers] = React.useState([]);
+  const [teams, setTeams] = React.useState([]);
   const [isPending, setIsPending] = React.useState<boolean>(true);
   const [refresh, setRefresh] = React.useState<boolean>(false);
 
@@ -71,12 +73,14 @@ export function DataTable({ ...props }) {
     try {
       apiClient
         .query({
-          query: gqlGetUsers,
+          query: gqlGetUsersAndTeams,
         })
         .then((result) => {
           const { data } = result;
 
-          setData(data.Users);
+          setUsers(data.users);
+          setTeams(data.teams);
+
           setIsPending(false);
         });
     } catch (error) {
@@ -87,7 +91,7 @@ export function DataTable({ ...props }) {
   }
 
   const table = useReactTable({
-    data,
+    data: users,
     columns: columns(),
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
@@ -103,7 +107,7 @@ export function DataTable({ ...props }) {
       rowSelection,
     },
 
-    meta: { setRefresh, apiClient },
+    meta: { setRefresh, apiClient, teams },
   });
 
   if (isPending) {
@@ -131,7 +135,11 @@ export function DataTable({ ...props }) {
 
         <Separator orientation="vertical" className="mx-4 h-6" />
 
-        <CreateButton apiClient={apiClient} setRefresh={setRefresh} />
+        <CreateButton
+          apiClient={apiClient}
+          setRefresh={setRefresh}
+          teams={teams}
+        />
       </div>
 
       {/* Table */}

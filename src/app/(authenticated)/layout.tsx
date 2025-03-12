@@ -1,3 +1,5 @@
+"use server";
+
 import React from "react";
 
 import {
@@ -10,7 +12,7 @@ import { Separator } from "@/components/ui/separator";
 import { Toaster } from "@/components/ui/sonner";
 import AppBreadcrumb from "@/components/app-breadcrumb";
 
-export default function Layout({
+export default async function Layout({
   children,
 }: Readonly<{
   children: React.ReactNode;
