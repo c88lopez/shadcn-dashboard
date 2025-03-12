@@ -4,11 +4,12 @@ import { Button } from "@/components/ui/button";
 import UserSheetForm from "@/app/(authenticated)/users/ui/forms/create";
 import { Plus } from "lucide-react";
 import ApiClient from "@/lib/api/client";
+import { Team } from "@vandelay-labs/schemas";
 
 type CreateButtonProps = {
   apiClient: ApiClient;
   setRefresh: Dispatch<boolean>;
-  teams: { cuid: string; name: string }[];
+  teams: Team[];
 };
 
 export default function CreateButton({ ...props }: CreateButtonProps) {

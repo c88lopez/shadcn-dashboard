@@ -24,7 +24,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { UserUpdateSchema } from "@vandelay-labs/schemas";
+import { Team, UserUpdateSchema } from "@vandelay-labs/schemas";
 import ApiClient from "@/lib/api/client";
 import { redirect } from "next/navigation";
 import {
@@ -39,12 +39,12 @@ type UserSheetFormProps = {
   setOpen: (open: boolean) => void;
   apiClient: ApiClient;
   setRefresh: Dispatch<boolean>;
-  teams: { cuid: string; name: string }[];
+  teams: Team[];
   user: {
     cuid: string;
     username: string;
     email: string;
-    teams: { cuid: string; name: string }[];
+    teams: Team[];
   };
 };
 
