@@ -81,8 +81,8 @@ export default function UserCreateSheetForm({ ...props }: UserSheetFormProps) {
   async function onSubmit(values: z.infer<typeof UserCreateSchema>) {
     setSubmitting(true);
 
-    const username = values.username;
     const email = values.email;
+    const username = values.username;
     const password = values.password;
 
     const gql = gqlCreateUser;
