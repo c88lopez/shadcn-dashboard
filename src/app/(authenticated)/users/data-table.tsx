@@ -1,6 +1,6 @@
 "use client";
 
-import React, { Dispatch, useEffect } from "react";
+import React, { useEffect } from "react";
 import { redirect } from "next/navigation";
 
 import {
@@ -34,26 +34,29 @@ import { Button } from "@/components/ui/button";
 import { RefreshCcw } from "lucide-react";
 import { ApolloError } from "@apollo/client";
 import { RowData } from "@tanstack/table-core";
-
-import { Team } from "@vandelay-labs/schemas";
-import { TeamsContext } from "@/app/(authenticated)/users/contexts/teams";
+import { useSetTeamsContext } from "@/app/(authenticated)/users/providers/teams";
+import {
+  useRefreshContext,
+  useSetRefreshContext,
+} from "@/app/(authenticated)/users/providers/refresh";
 
 declare module "@tanstack/table-core" {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   interface TableMeta<TData extends RowData> {
-    setRefresh: Dispatch<boolean>;
     apiClient: ApiClient;
-    teams: Team[];
   }
 }
 
 export function DataTable({ ...props }) {
   const apiClient = new ApiClient(props.graphqlServerUrl, props.accessToken);
 
+  const setTeams = useSetTeamsContext();
+
+  const refresh = useRefreshContext();
+  const setRefresh = useSetRefreshContext();
+
   const [users, setUsers] = React.useState([]);
-  const [teams, setTeams] = React.useState([]);
   const [isPending, setIsPending] = React.useState<boolean>(true);
-  const [refresh, setRefresh] = React.useState<boolean>(false);
 
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -82,7 +85,10 @@ export function DataTable({ ...props }) {
           const { data } = result;
 
           setUsers(data.users);
-          setTeams(data.teams);
+
+          if (setTeams) {
+            setTeams(data.teams);
+          }
 
           setIsPending(false);
         });
@@ -110,7 +116,7 @@ export function DataTable({ ...props }) {
       rowSelection,
     },
 
-    meta: { setRefresh, apiClient, teams },
+    meta: { apiClient },
   });
 
   if (isPending) {
@@ -119,84 +125,82 @@ export function DataTable({ ...props }) {
 
   return (
     <div>
-      <TeamsContext value={teams}>
-        <div className="flex w-full items-center py-4">
-          {/* Filter field*/}
-          <Input
-            placeholder="Filter emails..."
-            value={(table.getColumn("email")?.getFilterValue() as string) ?? ""}
-            onChange={(event) =>
-              table.getColumn("email")?.setFilterValue(event.target.value)
-            }
-            className="max-w-sm"
-          />
+      <div className="flex w-full items-center py-4">
+        {/* Filter field*/}
+        <Input
+          placeholder="Filter emails..."
+          value={(table.getColumn("email")?.getFilterValue() as string) ?? ""}
+          onChange={(event) =>
+            table.getColumn("email")?.setFilterValue(event.target.value)
+          }
+          className="max-w-sm"
+        />
 
-          <div className="flex w-full"></div>
+        <div className="flex w-full"></div>
 
-          <Button disabled={refresh} onClick={() => setRefresh(true)}>
-            <RefreshCcw />
-          </Button>
+        <Button disabled={refresh} onClick={() => setRefresh(true)}>
+          <RefreshCcw />
+        </Button>
 
-          <Separator orientation="vertical" className="mx-4 h-6" />
+        <Separator orientation="vertical" className="mx-4 h-6" />
 
-          <CreateButton apiClient={apiClient} setRefresh={setRefresh} />
-        </div>
+        <CreateButton apiClient={apiClient} />
+      </div>
 
-        {/* Table */}
-        <div className="rounded-md border">
-          <Table>
-            <TableHeader>
-              {table.getHeaderGroups().map((headerGroup) => (
-                <TableRow key={headerGroup.id}>
-                  {headerGroup.headers.map((header) => {
-                    return (
-                      <TableHead key={header.id}>
-                        {header.isPlaceholder
-                          ? null
-                          : flexRender(
-                              header.column.columnDef.header,
-                              header.getContext(),
-                            )}
-                      </TableHead>
-                    );
-                  })}
+      {/* Table */}
+      <div className="rounded-md border">
+        <Table>
+          <TableHeader>
+            {table.getHeaderGroups().map((headerGroup) => (
+              <TableRow key={headerGroup.id}>
+                {headerGroup.headers.map((header) => {
+                  return (
+                    <TableHead key={header.id}>
+                      {header.isPlaceholder
+                        ? null
+                        : flexRender(
+                            header.column.columnDef.header,
+                            header.getContext(),
+                          )}
+                    </TableHead>
+                  );
+                })}
+              </TableRow>
+            ))}
+          </TableHeader>
+          <TableBody>
+            {table.getRowModel().rows?.length ? (
+              table.getRowModel().rows.map((row) => (
+                <TableRow
+                  key={row.id}
+                  data-state={row.getIsSelected() && "selected"}
+                >
+                  {row.getVisibleCells().map((cell) => (
+                    <TableCell key={cell.id}>
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext(),
+                      )}
+                    </TableCell>
+                  ))}
                 </TableRow>
-              ))}
-            </TableHeader>
-            <TableBody>
-              {table.getRowModel().rows?.length ? (
-                table.getRowModel().rows.map((row) => (
-                  <TableRow
-                    key={row.id}
-                    data-state={row.getIsSelected() && "selected"}
-                  >
-                    {row.getVisibleCells().map((cell) => (
-                      <TableCell key={cell.id}>
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext(),
-                        )}
-                      </TableCell>
-                    ))}
-                  </TableRow>
-                ))
-              ) : (
-                <TableRow>
-                  <TableCell
-                    colSpan={table.getAllColumns().length}
-                    className="h-24 text-center"
-                  >
-                    No results.
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </div>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell
+                  colSpan={table.getAllColumns().length}
+                  className="h-24 text-center"
+                >
+                  No results.
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </div>
 
-        {/* Pagination */}
-        <Pagination table={table} />
-      </TeamsContext>
+      {/* Pagination */}
+      <Pagination table={table} />
     </div>
   );
 }

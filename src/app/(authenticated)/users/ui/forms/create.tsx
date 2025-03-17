@@ -1,4 +1,4 @@
-import React, { Dispatch, useContext } from "react";
+import React from "react";
 import { toast } from "sonner";
 
 import { Input } from "@/components/ui/input";
@@ -33,13 +33,13 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import MenuItem from "@/app/(authenticated)/users/ui/forms/menu-item";
-import { TeamsContext } from "@/app/(authenticated)/users/contexts/teams";
+import { useTeamsContext } from "@/app/(authenticated)/users/providers/teams";
+import { useSetRefreshContext } from "@/app/(authenticated)/users/providers/refresh";
 
 type UserSheetFormProps = {
   open: boolean;
   setOpen: (open: boolean) => void;
   apiClient: ApiClient;
-  setRefresh: Dispatch<boolean>;
   user?: {
     cuid: string;
     username: string;
@@ -66,7 +66,8 @@ export default function UserCreateSheetForm({ ...props }: UserSheetFormProps) {
 
   const [submitting, setSubmitting] = React.useState(false);
 
-  const teams = useContext(TeamsContext);
+  const teams = useTeamsContext();
+  const setRefresh = useSetRefreshContext();
 
   const selectedTeams = React.useRef<string[]>([]);
 
@@ -114,7 +115,7 @@ export default function UserCreateSheetForm({ ...props }: UserSheetFormProps) {
           variables,
         })
         .then(() => {
-          props.setRefresh(true);
+          setRefresh(true);
 
           toast.success(`User created successfully.`);
 

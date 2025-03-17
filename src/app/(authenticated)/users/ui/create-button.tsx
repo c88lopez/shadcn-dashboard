@@ -1,4 +1,4 @@
-import React, { Dispatch } from "react";
+import React from "react";
 
 import { Button } from "@/components/ui/button";
 import UserSheetForm from "@/app/(authenticated)/users/ui/forms/create";
@@ -7,7 +7,6 @@ import ApiClient from "@/lib/api/client";
 
 type CreateButtonProps = {
   apiClient: ApiClient;
-  setRefresh: Dispatch<boolean>;
 };
 
 export default function CreateButton({ ...props }: CreateButtonProps) {
@@ -22,7 +21,6 @@ export default function CreateButton({ ...props }: CreateButtonProps) {
 
       <UserSheetForm
         apiClient={props.apiClient}
-        setRefresh={props.setRefresh}
         open={sheetFormOpen}
         setOpen={setSheetFormOpen}
       />
