@@ -6,17 +6,7 @@ import { ArrowUpDown } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import React from "react";
 import UserDropdownMenu from "@/app/(authenticated)/users/ui/dropdown-menu";
-import { Team } from "@vandelay-labs/schemas";
-
-// This type is used to define the shape of our data.
-// You can use a Zod schema here if you want.
-export type User = {
-  id: string;
-  cuid: string;
-  username: string;
-  email: string;
-  teams: Team[];
-};
+import { User } from "@vandelay-labs/schemas";
 
 export const columns = (): ColumnDef<User>[] => [
   {
@@ -68,7 +58,7 @@ export const columns = (): ColumnDef<User>[] => [
     cell: ({ row }) => {
       const user = row.original;
 
-      return user.teams.length;
+      return (user?.teams ?? []).length;
     },
   },
   {
