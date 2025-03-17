@@ -80,7 +80,6 @@ export const columns = (): ColumnDef<User>[] => [
       return (
         <UserDropdownMenu
           user={user}
-          setRefresh={table.options.meta?.setRefresh ?? (() => {})}
           apiClient={table.options.meta?.apiClient ?? {}}
         />
       );

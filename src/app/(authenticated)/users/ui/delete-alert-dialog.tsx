@@ -8,11 +8,25 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import React, { useEffect } from "react";
+import React, { Dispatch, SetStateAction, useEffect } from "react";
 import { gqlDeleteUser } from "@/lib/api/queries/users";
 import { toast } from "sonner";
+import { User } from "@/app/(authenticated)/users/columns";
+import ApiClient from "@/lib/api/client";
+import { useSetRefreshContext } from "@/app/(authenticated)/users/providers/refresh";
 
-export default function DeleteAlertDialog({ ...props }) {
+type DeleteAlertDialogProps = {
+  user: User;
+  apiClient: ApiClient;
+  open: boolean;
+  setAlertDialogOpen: Dispatch<SetStateAction<boolean>>;
+};
+
+export default function DeleteAlertDialog({
+  ...props
+}: DeleteAlertDialogProps) {
+  const setRefresh = useSetRefreshContext();
+
   const [confirmedDeleteUser, setConfirmedDeleteUser] =
     React.useState<boolean>(false);
 
@@ -26,7 +40,7 @@ export default function DeleteAlertDialog({ ...props }) {
           },
         })
         .then(() => {
-          props.setRefresh(true);
+          setRefresh(true);
 
           toast.success("User deleted successfully.", {
             description: `User ${props.user.email} has been deleted.`,
@@ -49,9 +63,7 @@ export default function DeleteAlertDialog({ ...props }) {
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel
-            onClick={() => props.setAlertDialogOpen(undefined)}
-          >
+          <AlertDialogCancel onClick={() => props.setAlertDialogOpen(false)}>
             Cancel
           </AlertDialogCancel>
           <AlertDialogAction onClick={() => setConfirmedDeleteUser(true)}>
