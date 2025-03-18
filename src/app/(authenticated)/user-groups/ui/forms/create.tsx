@@ -24,7 +24,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { User, UserCreateSchema } from "@vandelay-labs/schemas";
+import { UserCreateSchema } from "@vandelay-labs/schemas";
 import ApiClient from "@/lib/api/client";
 import { redirect } from "next/navigation";
 import {
@@ -32,7 +32,7 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import MenuItem from "@/app/(authenticated)/users/ui/forms/menu-item";
+import MenuItem from "@/app/(authenticated)/user-groups/ui/forms/menu-item";
 import { useSetRefreshContext } from "@/providers/refresh";
 import { useUserGroupsContext } from "@/providers/user-groups";
 
@@ -40,10 +40,16 @@ type UserSheetFormProps = {
   open: boolean;
   setOpen: (open: boolean) => void;
   apiClient: ApiClient;
-  user?: User;
+  user?: {
+    cuid: string;
+    username: string;
+    email: string;
+  };
 };
 
-export default function UserCreateSheetForm({ ...props }: UserSheetFormProps) {
+export default function UserGroupCreateSheetForm({
+  ...props
+}: UserSheetFormProps) {
   const [serverError, setServerError] = React.useState<string | null>(null);
 
   const form = useForm<z.infer<typeof UserCreateSchema>>({

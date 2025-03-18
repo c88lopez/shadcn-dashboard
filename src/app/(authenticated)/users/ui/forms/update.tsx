@@ -24,7 +24,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { UserGroup, UserUpdateSchema } from "@vandelay-labs/schemas";
+import { User, UserGroup, UserUpdateSchema } from "@vandelay-labs/schemas";
 import ApiClient from "@/lib/api/client";
 import { redirect } from "next/navigation";
 import {
@@ -40,12 +40,7 @@ type UserSheetFormProps = {
   open: boolean;
   setOpen: (open: boolean) => void;
   apiClient: ApiClient;
-  user: {
-    cuid: string;
-    username: string;
-    email: string;
-    groups: UserGroup[];
-  };
+  user: User;
 };
 
 export default function UserUpdateSheetForm({ ...props }: UserSheetFormProps) {
@@ -71,7 +66,7 @@ export default function UserUpdateSheetForm({ ...props }: UserSheetFormProps) {
   const setRefresh = useSetRefreshContext();
 
   const selectedGroups = React.useRef<string[]>(
-    props.user.groups.map((group) => group.cuid),
+    props.user.groups.map((group: UserGroup) => group.cuid),
   );
 
   function updateSelectedGroups(groupCuid: string, add: boolean) {

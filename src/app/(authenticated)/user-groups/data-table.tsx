@@ -24,19 +24,22 @@ import {
 } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
-import CreateButton from "@/app/(authenticated)/users/ui/create-button";
-import DataTableSkeleton from "@/components/ui/data-table-skeleton";
-import Pagination from "@/app/(authenticated)/users/ui/pagination";
-import { columns } from "@/app/(authenticated)/users/columns";
+import CreateButton from "@/app/(authenticated)/user-groups/ui/create-button";
+import DataTableSkeleton from "@/app/(authenticated)/user-groups/ui/data-table-skeleton";
+import Pagination from "@/app/(authenticated)/user-groups/ui/pagination";
+import { columns } from "@/app/(authenticated)/user-groups/columns";
 import ApiClient from "@/lib/api/client";
 import { Button } from "@/components/ui/button";
 import { RefreshCcw } from "lucide-react";
 import { ApolloError } from "@apollo/client";
 import { RowData } from "@tanstack/table-core";
-import { useSetUserGroupsContext } from "@/providers/user-groups";
+import {
+  useSetUserGroupsContext,
+  useUserGroupsContext,
+} from "@/providers/user-groups";
 import { useRefreshContext, useSetRefreshContext } from "@/providers/refresh";
-import { gqlGetUsersAndGroups } from "@/lib/api/queries/users";
 import { useSetUsersContext, useUsersContext } from "@/providers/users";
+import { gqlGetUserGroupsAndUsers } from "@/lib/api/queries/user-groups";
 
 declare module "@tanstack/table-core" {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -48,13 +51,14 @@ declare module "@tanstack/table-core" {
 export function DataTable({ ...props }) {
   const apiClient = new ApiClient(props.graphqlServerUrl, props.accessToken);
 
-  const setUserGroups = useSetUserGroupsContext();
-
   const refresh = useRefreshContext();
   const setRefresh = useSetRefreshContext();
 
   const users = useUsersContext();
   const setUsers = useSetUsersContext();
+
+  const userGroups = useUserGroupsContext();
+  const setUserGroups = useSetUserGroupsContext();
 
   const [isPending, setIsPending] = React.useState<boolean>(true);
 
@@ -79,7 +83,7 @@ export function DataTable({ ...props }) {
     try {
       apiClient
         .query({
-          query: gqlGetUsersAndGroups,
+          query: gqlGetUserGroupsAndUsers,
         })
         .then((result) => {
           const { data } = result;
@@ -98,7 +102,7 @@ export function DataTable({ ...props }) {
   }
 
   const table = useReactTable({
-    data: users,
+    data: userGroups,
     columns: columns(),
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
@@ -127,7 +131,7 @@ export function DataTable({ ...props }) {
         {/* Filter field*/}
         <Input
           placeholder="Filter ..."
-          value={(table.getColumn("email")?.getFilterValue() as string) ?? ""}
+          value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
           onChange={(event) =>
             table.getColumn("email")?.setFilterValue(event.target.value)
           }

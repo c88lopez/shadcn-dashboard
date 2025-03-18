@@ -1,8 +1,10 @@
 "use client";
 
-import { DataTable } from "@/app/(authenticated)/users/data-table";
+import { DataTable } from "@/app/(authenticated)/user-groups/data-table";
+
 import { RefreshProvider } from "@/providers/refresh";
 import { UsersProvider } from "@/providers/users";
+import { UserGroupsProvider } from "@/providers/user-groups";
 
 type ClientPageArgs = {
   graphqlServerUrl: string;
@@ -15,12 +17,14 @@ export default function ClientPage({
 }: ClientPageArgs) {
   return (
     <UsersProvider>
-      <RefreshProvider>
-        <DataTable
-          graphqlServerUrl={graphqlServerUrl}
-          accessToken={accessToken}
-        />
-      </RefreshProvider>
+      <UserGroupsProvider>
+        <RefreshProvider>
+          <DataTable
+            graphqlServerUrl={graphqlServerUrl}
+            accessToken={accessToken}
+          />
+        </RefreshProvider>
+      </UserGroupsProvider>
     </UsersProvider>
   );
 }

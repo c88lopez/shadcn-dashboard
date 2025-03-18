@@ -31,8 +31,6 @@ export const gqlCreateUser = gql`
   mutation CreateUser($createUserData: CreateUserInput!) {
     createUser(createUserData: $createUserData) {
       cuid
-      email
-      username
     }
   }
 `;
@@ -41,8 +39,6 @@ export const gqlUpdateUser = gql`
   mutation UpdateUser($cuid: String!, $updateUserData: UpdateUserInput!) {
     updateUser(cuid: $cuid, updateUserData: $updateUserData) {
       cuid
-      email
-      username
     }
   }
 `;
