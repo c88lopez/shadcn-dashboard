@@ -40,7 +40,7 @@ export default function UserDropdownMenu({ ...props }: UserDropdownMenuProps) {
           onClick={() => navigator.clipboard.writeText(userGroup.cuid)}
         >
           <Copy />
-          Copy group ID
+          Copy user group ID
         </DropdownMenuItem>
 
         <DropdownMenuSeparator />
@@ -51,11 +51,11 @@ export default function UserDropdownMenu({ ...props }: UserDropdownMenuProps) {
           }}
         >
           <Pencil />
-          Update User
+          Update User Group
         </DropdownMenuItem>
         <DropdownMenuItem onSelect={() => setAlertDialogOpen(true)}>
           <Trash />
-          Trash User
+          Trash User Group
         </DropdownMenuItem>
       </DropdownMenuContent>
 

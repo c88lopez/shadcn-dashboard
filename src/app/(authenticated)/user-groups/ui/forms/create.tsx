@@ -24,7 +24,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { UserCreateSchema } from "@vandelay-labs/schemas";
+import { UserGroup, UserGroupCreateSchema } from "@vandelay-labs/schemas";
 import ApiClient from "@/lib/api/client";
 import { redirect } from "next/navigation";
 import {
@@ -40,11 +40,7 @@ type UserSheetFormProps = {
   open: boolean;
   setOpen: (open: boolean) => void;
   apiClient: ApiClient;
-  user?: {
-    cuid: string;
-    username: string;
-    email: string;
-  };
+  userGroup?: UserGroup;
 };
 
 export default function UserGroupCreateSheetForm({
@@ -52,17 +48,13 @@ export default function UserGroupCreateSheetForm({
 }: UserSheetFormProps) {
   const [serverError, setServerError] = React.useState<string | null>(null);
 
-  const form = useForm<z.infer<typeof UserCreateSchema>>({
-    resolver: zodResolver(UserCreateSchema),
+  const form = useForm<z.infer<typeof UserGroupCreateSchema>>({
+    resolver: zodResolver(UserGroupCreateSchema),
     defaultValues: {
-      username: props?.user?.username ?? "",
-      email: props?.user?.email ?? "",
-      password: "",
+      name: props?.userGroup?.name ?? "",
     },
     values: {
-      username: props?.user?.username ?? "",
-      email: props?.user?.email ?? "",
-      password: "",
+      name: props?.userGroup?.name ?? "",
     },
   });
 
@@ -71,43 +63,37 @@ export default function UserGroupCreateSheetForm({
   const userGroups = useUserGroupsContext();
   const setRefresh = useSetRefreshContext();
 
-  const selectedGroups = React.useRef<string[]>([]);
+  const selectedUsers = React.useRef<string[]>([]);
 
   function updateSelectedGroups(groupCuid: string, add: boolean) {
     if (add) {
-      selectedGroups.current.push(groupCuid);
+      selectedUsers.current.push(groupCuid);
     } else {
-      selectedGroups.current = selectedGroups.current.filter(
+      selectedUsers.current = selectedUsers.current.filter(
         (cuid) => cuid !== groupCuid,
       );
     }
   }
 
-  async function onSubmit(values: z.infer<typeof UserCreateSchema>) {
+  async function onSubmit(values: z.infer<typeof UserGroupCreateSchema>) {
     setSubmitting(true);
 
-    const email = values.email;
-    const username = values.username;
-    const password = values.password;
+    const name = values.name;
 
     const gql = gqlCreateUser;
     const variables: {
-      createUserData: {
-        username: string;
-        email: string;
-        password: string;
+      createUserGroupData: {
+        name: string;
         groups?: string[];
       };
     } = {
-      createUserData: {
-        username,
-        email,
-        password,
+      createUserGroupData: {
+        name,
       },
     };
 
-    if (selectedGroups.current.length > 0) {
-      variables.createUserData.groups = selectedGroups.current;
+    if (selectedUsers.current.length > 0) {
+      variables.createUserGroupData.groups = selectedUsers.current;
     }
 
     try {
@@ -122,7 +108,7 @@ export default function UserGroupCreateSheetForm({
           toast.success(`User created successfully.`);
 
           props.setOpen(false);
-          selectedGroups.current = [];
+          selectedUsers.current = [];
           form.reset();
         });
     } catch (error) {
@@ -157,40 +143,12 @@ export default function UserGroupCreateSheetForm({
 
               <FormField
                 control={form.control}
-                name="username"
+                name="name"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Username</FormLabel>
                     <FormControl>
                       <Input placeholder="" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Email</FormLabel>
-                    <FormControl>
-                      <Input placeholder="" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="password"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Password</FormLabel>
-                    <FormControl>
-                      <Input placeholder="" {...field} type="password" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -205,17 +163,17 @@ export default function UserGroupCreateSheetForm({
                   {userGroups.length === 0 ? (
                     <MenuItem
                       updateSelectedGroups={() => {}}
-                      group={{ cuid: "", name: "No groups available" }}
+                      userGroup={{ cuid: "", name: "No groups available" }}
                       disabled={true}
-                      selectedGroups={selectedGroups}
+                      selectedUsers={selectedUsers}
                     />
                   ) : (
-                    userGroups.map((group) => (
+                    userGroups.map((userGroup) => (
                       <MenuItem
-                        key={group.cuid}
+                        key={userGroup.cuid}
                         updateSelectedGroups={updateSelectedGroups}
-                        group={group}
-                        selectedGroups={selectedGroups}
+                        userGroup={userGroup}
+                        selectedUsers={selectedUsers}
                       />
                     ))
                   )}
