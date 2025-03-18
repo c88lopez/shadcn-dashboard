@@ -29,14 +29,14 @@ export const Sections: Section[] = [
         icon: User,
       },
       {
+        title: "User Groups",
+        url: "/user-groups",
+        icon: Users,
+      },
+      {
         title: "Roles",
         url: "/roles",
         icon: HardHat,
-      },
-      {
-        title: "Teams",
-        url: "/teams",
-        icon: Users,
       },
     ],
   },
