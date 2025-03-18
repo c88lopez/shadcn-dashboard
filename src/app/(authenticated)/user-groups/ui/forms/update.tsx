@@ -11,7 +11,6 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { gqlUpdateUser } from "@/lib/api/queries/users";
 import { ApolloError } from "@apollo/client";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -36,6 +35,7 @@ import {
 import MenuItem from "@/app/(authenticated)/user-groups/ui/forms/menu-item";
 import { useSetRefreshContext } from "@/providers/refresh";
 import { useUsersContext } from "@/providers/users";
+import { gqlUpdateUserGroup } from "@/lib/api/queries/user-groups";
 
 type UserSheetFormProps = {
   open: boolean;
@@ -84,10 +84,10 @@ export default function UserGroupUpdateSheetForm({
 
     const name = values.name;
 
-    const gql = gqlUpdateUser;
+    const gql = gqlUpdateUserGroup;
     const variables = {
       cuid: props.userGroup.cuid,
-      updateUserData: {
+      updateUserGroupData: {
         name,
         users: selectedUsers.current,
       },
@@ -102,7 +102,7 @@ export default function UserGroupUpdateSheetForm({
         .then(() => {
           setRefresh(true);
 
-          toast.success(`User updated successfully.`);
+          toast.success(`User group updated successfully.`);
 
           props.setOpen(false);
           form.reset();

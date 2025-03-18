@@ -4,7 +4,7 @@ import { UserGroup } from "@vandelay-labs/schemas";
 
 type MenuItemProps = {
   updateSelectedGroups: (cuid: string, add: boolean) => void;
-  group: UserGroup;
+  group: Pick<UserGroup, "cuid" | "name">;
   disabled?: boolean;
   selectedGroups: RefObject<string[]>;
 };

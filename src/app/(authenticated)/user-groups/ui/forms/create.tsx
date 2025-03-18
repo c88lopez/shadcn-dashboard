@@ -11,7 +11,6 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { gqlCreateUser } from "@/lib/api/queries/users";
 import { ApolloError } from "@apollo/client";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -29,12 +28,14 @@ import ApiClient from "@/lib/api/client";
 import { redirect } from "next/navigation";
 import {
   DropdownMenu,
+  DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import MenuItem from "@/app/(authenticated)/user-groups/ui/forms/menu-item";
 import { useSetRefreshContext } from "@/providers/refresh";
-import { useUserGroupsContext } from "@/providers/user-groups";
+import { useUsersContext } from "@/providers/users";
+import { gqlCreateUserGroup } from "@/lib/api/queries/user-groups";
 
 type UserSheetFormProps = {
   open: boolean;
@@ -60,7 +61,8 @@ export default function UserGroupCreateSheetForm({
 
   const [submitting, setSubmitting] = React.useState(false);
 
-  const userGroups = useUserGroupsContext();
+  const users = useUsersContext();
+
   const setRefresh = useSetRefreshContext();
 
   const selectedUsers = React.useRef<string[]>([]);
@@ -80,11 +82,11 @@ export default function UserGroupCreateSheetForm({
 
     const name = values.name;
 
-    const gql = gqlCreateUser;
+    const gql = gqlCreateUserGroup;
     const variables: {
       createUserGroupData: {
         name: string;
-        groups?: string[];
+        users?: string[];
       };
     } = {
       createUserGroupData: {
@@ -93,7 +95,7 @@ export default function UserGroupCreateSheetForm({
     };
 
     if (selectedUsers.current.length > 0) {
-      variables.createUserGroupData.groups = selectedUsers.current;
+      variables.createUserGroupData.users = selectedUsers.current;
     }
 
     try {
@@ -160,19 +162,16 @@ export default function UserGroupCreateSheetForm({
                   <Button variant="outline">Users</Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className="w-56">
-                  {userGroups.length === 0 ? (
-                    <MenuItem
-                      updateSelectedGroups={() => {}}
-                      userGroup={{ cuid: "", name: "No groups available" }}
-                      disabled={true}
-                      selectedUsers={selectedUsers}
-                    />
+                  {users.length === 0 ? (
+                    <DropdownMenuCheckboxItem disabled={true}>
+                      No users available
+                    </DropdownMenuCheckboxItem>
                   ) : (
-                    userGroups.map((userGroup) => (
+                    users.map((user) => (
                       <MenuItem
-                        key={userGroup.cuid}
-                        updateSelectedGroups={updateSelectedGroups}
-                        userGroup={userGroup}
+                        key={user.cuid}
+                        updateSelectedUsers={updateSelectedGroups}
+                        user={user}
                         selectedUsers={selectedUsers}
                       />
                     ))

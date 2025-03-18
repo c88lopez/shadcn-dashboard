@@ -34,11 +34,11 @@ export const gqlCreateUserGroup = gql`
 `;
 
 export const gqlUpdateUserGroup = gql`
-  mutation UpdateUser(
+  mutation UpdateUserGroup(
     $cuid: String!
     $updateUserGroupData: UpdateUserGroupInput!
   ) {
-    updateUser(cuid: $cuid, updateUserGroupData: $updateUserGroupData) {
+    updateUserGroup(cuid: $cuid, updateUserGroupData: $updateUserGroupData) {
       cuid
     }
   }
