@@ -18,7 +18,6 @@ export const gqlGetUsersAndGroups = gql`
       username
       groups {
         cuid
-        name
       }
     }
     userGroups {
