@@ -137,8 +137,8 @@ export default function UserGroupCreateSheetForm({
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
               <SheetHeader>
-                <SheetTitle>Create user</SheetTitle>
-                <SheetDescription>Create a new user.</SheetDescription>
+                <SheetTitle>Create user group</SheetTitle>
+                <SheetDescription>Create a new user group.</SheetDescription>
               </SheetHeader>
 
               <FormField
@@ -146,7 +146,7 @@ export default function UserGroupCreateSheetForm({
                 name="name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Username</FormLabel>
+                    <FormLabel>Name</FormLabel>
                     <FormControl>
                       <Input placeholder="" {...field} />
                     </FormControl>
@@ -157,7 +157,7 @@ export default function UserGroupCreateSheetForm({
 
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="outline">Groups</Button>
+                  <Button variant="outline">Users</Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className="w-56">
                   {userGroups.length === 0 ? (

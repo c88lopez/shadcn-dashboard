@@ -29,12 +29,13 @@ import ApiClient from "@/lib/api/client";
 import { redirect } from "next/navigation";
 import {
   DropdownMenu,
+  DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import MenuItem from "@/app/(authenticated)/user-groups/ui/forms/menu-item";
 import { useSetRefreshContext } from "@/providers/refresh";
-import { useUserGroupsContext } from "@/providers/user-groups";
+import { useUsersContext } from "@/providers/users";
 
 type UserSheetFormProps = {
   open: boolean;
@@ -60,19 +61,20 @@ export default function UserGroupUpdateSheetForm({
 
   const [submitting, setSubmitting] = React.useState(false);
 
-  const userGroups = useUserGroupsContext();
+  const users = useUsersContext();
+
   const setRefresh = useSetRefreshContext();
 
   const selectedUsers = React.useRef<string[]>(
     props.userGroup.users.map((user: User) => user.cuid),
   );
 
-  function updateSelectedGroups(groupCuid: string, add: boolean) {
+  function updateSelectedUsers(userCuid: string, add: boolean) {
     if (add) {
-      selectedUsers.current.push(groupCuid);
+      selectedUsers.current.push(userCuid);
     } else {
       selectedUsers.current = selectedUsers.current.filter(
-        (cuid) => cuid !== groupCuid,
+        (cuid) => cuid !== userCuid,
       );
     }
   }
@@ -131,8 +133,8 @@ export default function UserGroupUpdateSheetForm({
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
               <SheetHeader>
-                <SheetTitle>Update user</SheetTitle>
-                <SheetDescription>Update selected user.</SheetDescription>
+                <SheetTitle>Update user group</SheetTitle>
+                <SheetDescription>Update selected user group.</SheetDescription>
               </SheetHeader>
 
               <FormField
@@ -140,7 +142,7 @@ export default function UserGroupUpdateSheetForm({
                 name="name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Username</FormLabel>
+                    <FormLabel>Name</FormLabel>
                     <FormControl>
                       <Input placeholder="" {...field} />
                     </FormControl>
@@ -151,22 +153,19 @@ export default function UserGroupUpdateSheetForm({
 
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="outline">Groups</Button>
+                  <Button variant="outline">Users</Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className="w-56">
-                  {userGroups.length === 0 ? (
-                    <MenuItem
-                      updateSelectedGroups={updateSelectedGroups}
-                      group={{ cuid: "", name: "No groups available" }}
-                      disabled={true}
-                      selectedUsers={selectedUsers}
-                    />
+                  {users.length === 0 ? (
+                    <DropdownMenuCheckboxItem disabled={true}>
+                      No users available
+                    </DropdownMenuCheckboxItem>
                   ) : (
-                    userGroups.map((group) => (
+                    users.map((user) => (
                       <MenuItem
-                        key={group.cuid}
-                        updateSelectedGroups={updateSelectedGroups}
-                        group={group}
+                        key={user.cuid}
+                        updateSelectedUsers={updateSelectedUsers}
+                        user={user}
                         selectedUsers={selectedUsers}
                       />
                     ))

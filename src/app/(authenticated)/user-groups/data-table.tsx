@@ -38,7 +38,7 @@ import {
   useUserGroupsContext,
 } from "@/providers/user-groups";
 import { useRefreshContext, useSetRefreshContext } from "@/providers/refresh";
-import { useSetUsersContext, useUsersContext } from "@/providers/users";
+import { useSetUsersContext } from "@/providers/users";
 import { gqlGetUserGroupsAndUsers } from "@/lib/api/queries/user-groups";
 
 declare module "@tanstack/table-core" {
@@ -54,7 +54,6 @@ export function DataTable({ ...props }) {
   const refresh = useRefreshContext();
   const setRefresh = useSetRefreshContext();
 
-  const users = useUsersContext();
   const setUsers = useSetUsersContext();
 
   const userGroups = useUserGroupsContext();
@@ -188,6 +187,7 @@ export function DataTable({ ...props }) {
                 </TableRow>
               ))
             ) : (
+              // No data case
               <TableRow>
                 <TableCell
                   colSpan={table.getAllColumns().length}
