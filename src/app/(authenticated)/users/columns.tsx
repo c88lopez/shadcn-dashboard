@@ -53,12 +53,12 @@ export const columns = (): ColumnDef<User>[] => [
     },
   },
   {
-    id: "teams",
-    header: "Teams",
+    id: "groups",
+    header: "Groups",
     cell: ({ row }) => {
       const user = row.original;
 
-      return (user?.teams ?? []).length;
+      return (user?.groups ?? []).length;
     },
   },
   {

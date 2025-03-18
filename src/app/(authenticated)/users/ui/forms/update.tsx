@@ -24,7 +24,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Team, UserUpdateSchema } from "@vandelay-labs/schemas";
+import { UserGroup, UserUpdateSchema } from "@vandelay-labs/schemas";
 import ApiClient from "@/lib/api/client";
 import { redirect } from "next/navigation";
 import {
@@ -33,8 +33,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import MenuItem from "@/app/(authenticated)/users/ui/forms/menu-item";
-import { useTeamsContext } from "@/app/(authenticated)/users/providers/teams";
 import { useSetRefreshContext } from "@/app/(authenticated)/users/providers/refresh";
+import { useUserGroupsContext } from "@/app/(authenticated)/users/providers/user-groups";
 
 type UserSheetFormProps = {
   open: boolean;
@@ -44,7 +44,7 @@ type UserSheetFormProps = {
     cuid: string;
     username: string;
     email: string;
-    teams: Team[];
+    groups: UserGroup[];
   };
 };
 
@@ -67,18 +67,18 @@ export default function UserUpdateSheetForm({ ...props }: UserSheetFormProps) {
 
   const [submitting, setSubmitting] = React.useState(false);
 
-  const teams = useTeamsContext();
+  const userGroups = useUserGroupsContext();
   const setRefresh = useSetRefreshContext();
 
-  const selectedTeams = React.useRef<string[]>(
-    props.user.teams.map((team) => team.cuid),
+  const selectedGroups = React.useRef<string[]>(
+    props.user.groups.map((group) => group.cuid),
   );
 
-  function updateSelectedTeams(teamCuid: string, add: boolean) {
+  function updateSelectedGroups(teamCuid: string, add: boolean) {
     if (add) {
-      selectedTeams.current.push(teamCuid);
+      selectedGroups.current.push(teamCuid);
     } else {
-      selectedTeams.current = selectedTeams.current.filter(
+      selectedGroups.current = selectedGroups.current.filter(
         (cuid) => cuid !== teamCuid,
       );
     }
@@ -98,7 +98,7 @@ export default function UserUpdateSheetForm({ ...props }: UserSheetFormProps) {
         username,
         email,
         password,
-        teams: selectedTeams.current,
+        teams: selectedGroups.current,
       },
     };
 
@@ -193,20 +193,20 @@ export default function UserUpdateSheetForm({ ...props }: UserSheetFormProps) {
                   <Button variant="outline">Teams</Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className="w-56">
-                  {teams.length === 0 ? (
+                  {userGroups.length === 0 ? (
                     <MenuItem
-                      updateSelectedTeams={updateSelectedTeams}
+                      updateSelectedTeams={updateSelectedGroups}
                       team={{ cuid: "", name: "No teams available" }}
                       disabled={true}
-                      selectedTeams={selectedTeams}
+                      selectedTeams={selectedGroups}
                     />
                   ) : (
-                    teams.map((team) => (
+                    userGroups.map((group) => (
                       <MenuItem
-                        key={team.cuid}
-                        updateSelectedTeams={updateSelectedTeams}
-                        team={team}
-                        selectedTeams={selectedTeams}
+                        key={group.cuid}
+                        updateSelectedTeams={updateSelectedGroups}
+                        group={group}
+                        selectedTeams={selectedGroups}
                       />
                     ))
                   )}

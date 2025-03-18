@@ -10,18 +10,18 @@ export const gqlGetUsers = gql`
   }
 `;
 
-export const gqlGetUsersAndTeams = gql`
+export const gqlGetUsersAndGroups = gql`
   query Users {
     users {
       cuid
       email
       username
-      teams {
+      groups {
         cuid
         name
       }
     }
-    teams {
+    userGroups {
       cuid
       name
     }

@@ -3,16 +3,16 @@ import { DropdownMenuCheckboxItem } from "@/components/ui/dropdown-menu";
 
 export default function MenuItem({ ...props }) {
   const itemChecked = props.selectedTeams.current.some(
-    (teamCuid: string) => teamCuid === props.team.cuid,
+    (teamCuid: string) => teamCuid === props.group.cuid,
   );
 
   const [checked, setChecked] = React.useState<string>(
-    itemChecked ? props.team.cuid : "",
+    itemChecked ? props.group.cuid : "",
   );
 
   function onCheckedChange(isChecked: string) {
     setChecked(isChecked);
-    props.updateSelectedTeams(props.team.cuid, isChecked);
+    props.updateSelectedTeams(props.group.cuid, isChecked);
   }
 
   return (
@@ -23,10 +23,10 @@ export default function MenuItem({ ...props }) {
       checked={checked !== ""}
       disabled={props.disabled}
       onCheckedChange={(isChecked) =>
-        onCheckedChange(isChecked ? props.team.cuid : "")
+        onCheckedChange(isChecked ? props.group.cuid : "")
       }
     >
-      {props.team.name}
+      {props.group.name}
     </DropdownMenuCheckboxItem>
   );
 }

@@ -33,8 +33,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import MenuItem from "@/app/(authenticated)/users/ui/forms/menu-item";
-import { useTeamsContext } from "@/app/(authenticated)/users/providers/teams";
 import { useSetRefreshContext } from "@/app/(authenticated)/users/providers/refresh";
+import { useUserGroupsContext } from "@/app/(authenticated)/users/providers/user-groups";
 
 type UserSheetFormProps = {
   open: boolean;
@@ -66,7 +66,7 @@ export default function UserCreateSheetForm({ ...props }: UserSheetFormProps) {
 
   const [submitting, setSubmitting] = React.useState(false);
 
-  const teams = useTeamsContext();
+  const teams = useUserGroupsContext();
   const setRefresh = useSetRefreshContext();
 
   const selectedTeams = React.useRef<string[]>([]);

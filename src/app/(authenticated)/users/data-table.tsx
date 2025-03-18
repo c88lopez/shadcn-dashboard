@@ -28,17 +28,17 @@ import CreateButton from "@/app/(authenticated)/users/ui/create-button";
 import DataTableSkeleton from "@/app/(authenticated)/users/ui/data-table-skeleton";
 import Pagination from "@/app/(authenticated)/users/ui/pagination";
 import { columns } from "@/app/(authenticated)/users/columns";
-import { gqlGetUsersAndTeams } from "@/lib/api/queries/users";
 import ApiClient from "@/lib/api/client";
 import { Button } from "@/components/ui/button";
 import { RefreshCcw } from "lucide-react";
 import { ApolloError } from "@apollo/client";
 import { RowData } from "@tanstack/table-core";
-import { useSetTeamsContext } from "@/app/(authenticated)/users/providers/teams";
+import { useSetUserGroupsContext } from "@/app/(authenticated)/users/providers/user-groups";
 import {
   useRefreshContext,
   useSetRefreshContext,
 } from "@/app/(authenticated)/users/providers/refresh";
+import { gqlGetUsersAndGroups } from "@/lib/api/queries/users";
 
 declare module "@tanstack/table-core" {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -50,7 +50,7 @@ declare module "@tanstack/table-core" {
 export function DataTable({ ...props }) {
   const apiClient = new ApiClient(props.graphqlServerUrl, props.accessToken);
 
-  const setTeams = useSetTeamsContext();
+  const setUserGroups = useSetUserGroupsContext();
 
   const refresh = useRefreshContext();
   const setRefresh = useSetRefreshContext();
@@ -79,15 +79,15 @@ export function DataTable({ ...props }) {
     try {
       apiClient
         .query({
-          query: gqlGetUsersAndTeams,
+          query: gqlGetUsersAndGroups,
         })
         .then((result) => {
           const { data } = result;
 
           setUsers(data.users);
 
-          if (setTeams) {
-            setTeams(data.teams);
+          if (setUserGroups) {
+            setUserGroups(data.userGroups);
           }
 
           setIsPending(false);
