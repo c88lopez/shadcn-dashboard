@@ -33,11 +33,8 @@ import { Button } from "@/components/ui/button";
 import { RefreshCcw } from "lucide-react";
 import { ApolloError } from "@apollo/client";
 import { RowData } from "@tanstack/table-core";
-import { useSetUserGroupsContext } from "@/app/(authenticated)/users/providers/user-groups";
-import {
-  useRefreshContext,
-  useSetRefreshContext,
-} from "@/app/(authenticated)/users/providers/refresh";
+import { useSetUserGroupsContext } from "@/providers/user-groups";
+import { useRefreshContext, useSetRefreshContext } from "@/providers/refresh";
 import { gqlGetUsersAndGroups } from "@/lib/api/queries/users";
 
 declare module "@tanstack/table-core" {
@@ -94,6 +91,7 @@ export function DataTable({ ...props }) {
         });
     } catch (error) {
       if (error instanceof ApolloError && error.message === "Unauthorized") {
+        setRefresh(false);
         redirect("/login");
       }
     }

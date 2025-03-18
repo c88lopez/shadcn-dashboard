@@ -11,9 +11,9 @@ import {
 import React, { Dispatch, SetStateAction, useEffect } from "react";
 import { gqlDeleteUser } from "@/lib/api/queries/users";
 import { toast } from "sonner";
-import { User } from "@/app/(authenticated)/users/columns";
 import ApiClient from "@/lib/api/client";
-import { useSetRefreshContext } from "@/app/(authenticated)/users/providers/refresh";
+import { useSetRefreshContext } from "@/providers/refresh";
+import { User } from "@vandelay-labs/schemas";
 
 type DeleteAlertDialogProps = {
   user: User;

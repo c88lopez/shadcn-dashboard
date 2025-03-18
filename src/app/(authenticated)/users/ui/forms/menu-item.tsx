@@ -1,9 +1,17 @@
-import React from "react";
+import React, { RefObject } from "react";
 import { DropdownMenuCheckboxItem } from "@/components/ui/dropdown-menu";
+import { UserGroup } from "@vandelay-labs/schemas";
 
-export default function MenuItem({ ...props }) {
-  const itemChecked = props.selectedTeams.current.some(
-    (teamCuid: string) => teamCuid === props.group.cuid,
+type MenuItemProps = {
+  updateSelectedGroups: (cuid: string, add: boolean) => void;
+  group: UserGroup;
+  disabled?: boolean;
+  selectedGroups: RefObject<string[]>;
+};
+
+export default function MenuItem({ ...props }: MenuItemProps) {
+  const itemChecked = props.selectedGroups.current.some(
+    (groupCuid: string) => groupCuid === props.group.cuid,
   );
 
   const [checked, setChecked] = React.useState<string>(
@@ -12,7 +20,9 @@ export default function MenuItem({ ...props }) {
 
   function onCheckedChange(isChecked: string) {
     setChecked(isChecked);
-    props.updateSelectedTeams(props.group.cuid, isChecked);
+
+    // Add cuid if checked, remove if unchecked
+    props.updateSelectedGroups(props.group.cuid, isChecked !== "");
   }
 
   return (

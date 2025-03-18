@@ -33,8 +33,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import MenuItem from "@/app/(authenticated)/users/ui/forms/menu-item";
-import { useSetRefreshContext } from "@/app/(authenticated)/users/providers/refresh";
-import { useUserGroupsContext } from "@/app/(authenticated)/users/providers/user-groups";
+import { useSetRefreshContext } from "@/providers/refresh";
+import { useUserGroupsContext } from "@/providers/user-groups";
 
 type UserSheetFormProps = {
   open: boolean;
@@ -74,12 +74,12 @@ export default function UserUpdateSheetForm({ ...props }: UserSheetFormProps) {
     props.user.groups.map((group) => group.cuid),
   );
 
-  function updateSelectedGroups(teamCuid: string, add: boolean) {
+  function updateSelectedGroups(groupCuid: string, add: boolean) {
     if (add) {
-      selectedGroups.current.push(teamCuid);
+      selectedGroups.current.push(groupCuid);
     } else {
       selectedGroups.current = selectedGroups.current.filter(
-        (cuid) => cuid !== teamCuid,
+        (cuid) => cuid !== groupCuid,
       );
     }
   }
@@ -98,7 +98,7 @@ export default function UserUpdateSheetForm({ ...props }: UserSheetFormProps) {
         username,
         email,
         password,
-        teams: selectedGroups.current,
+        groups: selectedGroups.current,
       },
     };
 
@@ -190,23 +190,23 @@ export default function UserUpdateSheetForm({ ...props }: UserSheetFormProps) {
 
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="outline">Teams</Button>
+                  <Button variant="outline">Groups</Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className="w-56">
                   {userGroups.length === 0 ? (
                     <MenuItem
-                      updateSelectedTeams={updateSelectedGroups}
-                      team={{ cuid: "", name: "No teams available" }}
+                      updateSelectedGroups={updateSelectedGroups}
+                      group={{ cuid: "", name: "No groups available" }}
                       disabled={true}
-                      selectedTeams={selectedGroups}
+                      selectedGroups={selectedGroups}
                     />
                   ) : (
                     userGroups.map((group) => (
                       <MenuItem
                         key={group.cuid}
-                        updateSelectedTeams={updateSelectedGroups}
+                        updateSelectedGroups={updateSelectedGroups}
                         group={group}
-                        selectedTeams={selectedGroups}
+                        selectedGroups={selectedGroups}
                       />
                     ))
                   )}

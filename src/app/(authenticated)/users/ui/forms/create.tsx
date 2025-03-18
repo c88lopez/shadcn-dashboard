@@ -33,8 +33,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import MenuItem from "@/app/(authenticated)/users/ui/forms/menu-item";
-import { useSetRefreshContext } from "@/app/(authenticated)/users/providers/refresh";
-import { useUserGroupsContext } from "@/app/(authenticated)/users/providers/user-groups";
+import { useSetRefreshContext } from "@/providers/refresh";
+import { useUserGroupsContext } from "@/providers/user-groups";
 
 type UserSheetFormProps = {
   open: boolean;
@@ -66,17 +66,17 @@ export default function UserCreateSheetForm({ ...props }: UserSheetFormProps) {
 
   const [submitting, setSubmitting] = React.useState(false);
 
-  const teams = useUserGroupsContext();
+  const userGroups = useUserGroupsContext();
   const setRefresh = useSetRefreshContext();
 
-  const selectedTeams = React.useRef<string[]>([]);
+  const selectedGroups = React.useRef<string[]>([]);
 
-  function updateSelectedTeams(teamCuid: string, add: boolean) {
+  function updateSelectedGroups(groupCuid: string, add: boolean) {
     if (add) {
-      selectedTeams.current.push(teamCuid);
+      selectedGroups.current.push(groupCuid);
     } else {
-      selectedTeams.current = selectedTeams.current.filter(
-        (cuid) => cuid !== teamCuid,
+      selectedGroups.current = selectedGroups.current.filter(
+        (cuid) => cuid !== groupCuid,
       );
     }
   }
@@ -94,7 +94,7 @@ export default function UserCreateSheetForm({ ...props }: UserSheetFormProps) {
         username: string;
         email: string;
         password: string;
-        teams?: string[];
+        groups?: string[];
       };
     } = {
       createUserData: {
@@ -104,8 +104,8 @@ export default function UserCreateSheetForm({ ...props }: UserSheetFormProps) {
       },
     };
 
-    if (selectedTeams.current.length > 0) {
-      variables.createUserData.teams = selectedTeams.current;
+    if (selectedGroups.current.length > 0) {
+      variables.createUserData.groups = selectedGroups.current;
     }
 
     try {
@@ -120,7 +120,7 @@ export default function UserCreateSheetForm({ ...props }: UserSheetFormProps) {
           toast.success(`User created successfully.`);
 
           props.setOpen(false);
-          selectedTeams.current = [];
+          selectedGroups.current = [];
           form.reset();
         });
     } catch (error) {
@@ -197,23 +197,23 @@ export default function UserCreateSheetForm({ ...props }: UserSheetFormProps) {
 
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="outline">Teams</Button>
+                  <Button variant="outline">Groups</Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className="w-56">
-                  {teams.length === 0 ? (
+                  {userGroups.length === 0 ? (
                     <MenuItem
-                      updateSelectedTeams={updateSelectedTeams}
-                      team={{ cuid: "", name: "No teams available" }}
+                      updateSelectedGroups={() => {}}
+                      group={{ cuid: "", name: "No groups available" }}
                       disabled={true}
-                      selectedTeams={selectedTeams}
+                      selectedGroups={selectedGroups}
                     />
                   ) : (
-                    teams.map((team) => (
+                    userGroups.map((group) => (
                       <MenuItem
-                        key={team.cuid}
-                        updateSelectedTeams={updateSelectedTeams}
-                        team={team}
-                        selectedTeams={selectedTeams}
+                        key={group.cuid}
+                        updateSelectedGroups={updateSelectedGroups}
+                        group={group}
+                        selectedGroups={selectedGroups}
                       />
                     ))
                   )}
