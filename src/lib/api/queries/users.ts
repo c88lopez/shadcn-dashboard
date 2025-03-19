@@ -1,15 +1,5 @@
 import { gql } from "@apollo/client";
 
-export const gqlGetUsers = gql`
-  query Users {
-    users {
-      cuid
-      email
-      username
-    }
-  }
-`;
-
 export const gqlGetUsersAndGroups = gql`
   query Users {
     users {
