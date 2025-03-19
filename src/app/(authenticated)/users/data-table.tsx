@@ -48,13 +48,13 @@ declare module "@tanstack/table-core" {
 export function DataTable({ ...props }) {
   const apiClient = new ApiClient(props.graphqlServerUrl, props.accessToken);
 
-  const setUserGroups = useSetUserGroupsContext();
-
   const refresh = useRefreshContext();
   const setRefresh = useSetRefreshContext();
 
   const users = useUsersContext();
   const setUsers = useSetUsersContext();
+
+  const setUserGroups = useSetUserGroupsContext();
 
   const [isPending, setIsPending] = React.useState<boolean>(true);
 
