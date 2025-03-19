@@ -83,8 +83,8 @@ export default function UserUpdateSheetForm({ ...props }: UserSheetFormProps) {
   async function onSubmit(values: z.infer<typeof UserUpdateSchema>) {
     setSubmitting(true);
 
-    const username = values.username;
     const email = values.email;
+    const username = values.username;
     const password = values.password;
 
     const gql = gqlUpdateUser;
