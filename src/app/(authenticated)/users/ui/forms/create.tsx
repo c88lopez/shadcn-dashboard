@@ -24,7 +24,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { User, UserCreateSchema } from "@vandelay-labs/schemas";
+import { UserCreateSchema } from "@vandelay-labs/schemas";
 import ApiClient from "@/lib/api/client";
 import { redirect } from "next/navigation";
 import {
@@ -41,7 +41,6 @@ type UserSheetFormProps = {
   open: boolean;
   setOpen: (open: boolean) => void;
   apiClient: ApiClient;
-  user?: User;
 };
 
 export default function UserCreateSheetForm({ ...props }: UserSheetFormProps) {
@@ -50,13 +49,8 @@ export default function UserCreateSheetForm({ ...props }: UserSheetFormProps) {
   const form = useForm<z.infer<typeof UserCreateSchema>>({
     resolver: zodResolver(UserCreateSchema),
     defaultValues: {
-      username: props?.user?.username ?? "",
-      email: props?.user?.email ?? "",
-      password: "",
-    },
-    values: {
-      username: props?.user?.username ?? "",
-      email: props?.user?.email ?? "",
+      username: "",
+      email: "",
       password: "",
     },
   });
@@ -103,21 +97,19 @@ export default function UserCreateSheetForm({ ...props }: UserSheetFormProps) {
     };
 
     try {
-      props.apiClient
-        .mutate({
-          mutation: gql,
-          variables,
-        })
-        .then(() => {
-          setRefresh(true);
+      await props.apiClient.mutate({
+        mutation: gql,
+        variables,
+      });
 
-          toast.success(`User created successfully.`);
+      setRefresh(true);
 
-          props.setOpen(false);
+      toast.success(`User created successfully.`);
 
-          selectedGroups.current = [];
-          form.reset();
-        });
+      props.setOpen(false);
+
+      selectedGroups.current = [];
+      form.reset();
     } catch (error) {
       if (error instanceof ApolloError && error.message === "Unauthorized") {
         redirect("/login");

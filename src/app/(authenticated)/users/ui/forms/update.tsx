@@ -54,11 +54,6 @@ export default function UserUpdateSheetForm({ ...props }: UserSheetFormProps) {
       email: props.user.email,
       password: "",
     },
-    values: {
-      username: props.user.username,
-      email: props.user.email,
-      password: "",
-    },
   });
 
   const [submitting, setSubmitting] = React.useState(false);
@@ -107,19 +102,17 @@ export default function UserUpdateSheetForm({ ...props }: UserSheetFormProps) {
     };
 
     try {
-      props.apiClient
-        .mutate({
-          mutation: gql,
-          variables,
-        })
-        .then(() => {
-          setRefresh(true);
+      await props.apiClient.mutate({
+        mutation: gql,
+        variables,
+      });
 
-          toast.success(`User updated successfully.`);
+      setRefresh(true);
 
-          props.setOpen(false);
-          form.reset();
-        });
+      toast.success(`User updated successfully.`);
+
+      props.setOpen(false);
+      form.reset();
     } catch (error) {
       if (error instanceof ApolloError && error.message === "Unauthorized") {
         redirect("/login");
