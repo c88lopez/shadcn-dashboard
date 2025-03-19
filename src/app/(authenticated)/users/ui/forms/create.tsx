@@ -29,6 +29,7 @@ import ApiClient from "@/lib/api/client";
 import { redirect } from "next/navigation";
 import {
   DropdownMenu,
+  DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
@@ -113,6 +114,7 @@ export default function UserCreateSheetForm({ ...props }: UserSheetFormProps) {
           toast.success(`User created successfully.`);
 
           props.setOpen(false);
+
           selectedGroups.current = [];
           form.reset();
         });
@@ -194,12 +196,9 @@ export default function UserCreateSheetForm({ ...props }: UserSheetFormProps) {
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className="w-56">
                   {userGroups.length === 0 ? (
-                    <MenuItem
-                      updateSelectedGroups={() => {}}
-                      group={{ cuid: "", name: "No groups available" }}
-                      disabled={true}
-                      selectedGroups={selectedGroups}
-                    />
+                    <DropdownMenuCheckboxItem disabled={true}>
+                      No groups available
+                    </DropdownMenuCheckboxItem>
                   ) : (
                     userGroups.map((group) => (
                       <MenuItem
