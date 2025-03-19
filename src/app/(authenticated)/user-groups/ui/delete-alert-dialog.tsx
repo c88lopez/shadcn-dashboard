@@ -53,7 +53,9 @@ export default function DeleteAlertDialog({
 
   return (
     <AlertDialog open={props.open}>
-      <AlertDialogContent>
+      <AlertDialogContent
+        onEscapeKeyDown={() => props.setAlertDialogOpen(false)}
+      >
         <AlertDialogHeader>
           <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
           <AlertDialogDescription>
