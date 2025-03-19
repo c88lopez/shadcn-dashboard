@@ -1,6 +1,7 @@
 "use client";
 
 import { DataTable } from "@/app/(authenticated)/users/data-table";
+
 import { RefreshProvider } from "@/providers/refresh";
 import { UserGroupsProvider } from "@/providers/user-groups";
 import { UsersProvider } from "@/providers/users";
