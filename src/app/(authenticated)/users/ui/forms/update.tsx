@@ -91,8 +91,8 @@ export default function UserUpdateSheetForm({ ...props }: UserSheetFormProps) {
     const variables: {
       cuid: string;
       updateUserData: {
-        username: string;
         email: string;
+        username: string;
         password?: string;
         groups?: string[];
       };

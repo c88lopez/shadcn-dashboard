@@ -88,8 +88,8 @@ export default function UserCreateSheetForm({ ...props }: UserSheetFormProps) {
     const gql = gqlCreateUser;
     const variables: {
       createUserData: {
-        username: string;
         email: string;
+        username: string;
         password: string;
         groups?: string[];
       };
