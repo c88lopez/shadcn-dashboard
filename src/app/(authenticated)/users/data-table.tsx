@@ -77,20 +77,17 @@ export function DataTable({ ...props }) {
 
   async function fetchData() {
     try {
-      apiClient
-        .query({
-          query: gqlGetUsersAndGroups,
-        })
-        .then((result) => {
-          const { data } = result;
+      const { data } = await apiClient.query({
+        query: gqlGetUsersAndGroups,
+      });
 
-          setUsers(data.users);
-          setUserGroups(data.userGroups);
+      setUsers(data.users);
+      setUserGroups(data.userGroups);
 
-          setIsPending(false);
-        });
+      setIsPending(false);
     } catch (error) {
       if (error instanceof ApolloError && error.message === "Unauthorized") {
+        setIsPending(false);
         setRefresh(false);
         redirect("/login");
       }
