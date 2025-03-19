@@ -133,91 +133,89 @@ export default function UserUpdateSheetForm({ ...props }: UserSheetFormProps) {
   }
 
   return (
-    <>
-      <Sheet open={props.open} onOpenChange={props.setOpen}>
-        <SheetContent>
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-              <SheetHeader>
-                <SheetTitle>Update user</SheetTitle>
-                <SheetDescription>Update selected user.</SheetDescription>
-              </SheetHeader>
+    <Sheet open={props.open} onOpenChange={props.setOpen}>
+      <SheetContent>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+            <SheetHeader>
+              <SheetTitle>Update user</SheetTitle>
+              <SheetDescription>Update selected user.</SheetDescription>
+            </SheetHeader>
 
-              <FormField
-                control={form.control}
-                name="username"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Username</FormLabel>
-                    <FormControl>
-                      <Input placeholder="" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
+            <FormField
+              control={form.control}
+              name="username"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Username</FormLabel>
+                  <FormControl>
+                    <Input placeholder="" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Email</FormLabel>
+                  <FormControl>
+                    <Input placeholder="" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="password"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Password</FormLabel>
+                  <FormControl>
+                    <Input placeholder="" {...field} type="password" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline">Groups</Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-56">
+                {userGroups.length === 0 ? (
+                  <DropdownMenuCheckboxItem disabled={true}>
+                    No groups available
+                  </DropdownMenuCheckboxItem>
+                ) : (
+                  userGroups.map((group) => (
+                    <MenuItem
+                      key={group.cuid}
+                      updateSelectedGroups={updateSelectedGroups}
+                      group={group}
+                      selectedGroups={selectedGroups}
+                    />
+                  ))
                 )}
-              />
+              </DropdownMenuContent>
+            </DropdownMenu>
 
-              <FormField
-                control={form.control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Email</FormLabel>
-                    <FormControl>
-                      <Input placeholder="" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="password"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Password</FormLabel>
-                    <FormControl>
-                      <Input placeholder="" {...field} type="password" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="outline">Groups</Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent className="w-56">
-                  {userGroups.length === 0 ? (
-                    <DropdownMenuCheckboxItem disabled={true}>
-                      No groups available
-                    </DropdownMenuCheckboxItem>
-                  ) : (
-                    userGroups.map((group) => (
-                      <MenuItem
-                        key={group.cuid}
-                        updateSelectedGroups={updateSelectedGroups}
-                        group={group}
-                        selectedGroups={selectedGroups}
-                      />
-                    ))
-                  )}
-                </DropdownMenuContent>
-              </DropdownMenu>
-
-              <SheetFooter>
-                <FormMessage className="">{serverError}</FormMessage>
-                <div className="min-w-10"></div>
-                <Button type="submit" disabled={submitting}>
-                  Update
-                </Button>
-              </SheetFooter>
-            </form>
-          </Form>
-        </SheetContent>
-      </Sheet>
-    </>
+            <SheetFooter>
+              <FormMessage className="">{serverError}</FormMessage>
+              <div className="min-w-10"></div>
+              <Button type="submit" disabled={submitting}>
+                Update
+              </Button>
+            </SheetFooter>
+          </form>
+        </Form>
+      </SheetContent>
+    </Sheet>
   );
 }
