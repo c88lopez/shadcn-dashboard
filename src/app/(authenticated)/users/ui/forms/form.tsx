@@ -68,7 +68,7 @@ export default function UserSheetForm({ ...props }: UserSheetFormProps) {
   const setRefresh = useSetRefreshContext();
 
   const selectedGroups = React.useRef<string[]>(
-    (props?.user?.groups ?? []).map((group: UserGroup) => group.cuid),
+    (props.user?.groups ?? []).map((group: UserGroup) => group.cuid),
   );
 
   function updateSelectedGroups(groupCuid: string, add: boolean) {
@@ -138,7 +138,6 @@ export default function UserSheetForm({ ...props }: UserSheetFormProps) {
       });
 
       setRefresh(true);
-
       toast.success(`User ${props.user ? "updated" : "created"} successfully.`);
 
       props.setOpen(false);
