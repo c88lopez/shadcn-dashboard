@@ -11,7 +11,6 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useUserGroupsContext } from "@/providers/user-groups";
 import { useSetRefreshContext } from "@/providers/refresh";
-import { gqlCreateUser, gqlUpdateUser } from "@/lib/api/queries/users";
 import { toast } from "sonner";
 import { ApolloError } from "@apollo/client";
 import { redirect } from "next/navigation";
@@ -40,6 +39,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import MenuItem from "@/app/(authenticated)/users/ui/forms/menu-item";
+import { gqlCreateUser, gqlUpdateUser } from "@/lib/api/queries/users";
 
 type UserSheetFormProps = {
   open: boolean;

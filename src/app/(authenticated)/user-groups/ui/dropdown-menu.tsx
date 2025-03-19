@@ -10,7 +10,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import UserGroupSheetForm from "@/app/(authenticated)/user-groups/ui/forms/update";
+import UserGroupSheetForm from "@/app/(authenticated)/user-groups/ui/forms/form";
 import DeleteAlertDialog from "@/app/(authenticated)/user-groups/ui/delete-alert-dialog";
 import ApiClient from "@/lib/api/client";
 import { UserGroup } from "@vandelay-labs/schemas";

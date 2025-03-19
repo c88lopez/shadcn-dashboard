@@ -40,7 +40,10 @@ import {
 import MenuItem from "@/app/(authenticated)/user-groups/ui/forms/menu-item";
 import { useSetRefreshContext } from "@/providers/refresh";
 import { useUsersContext } from "@/providers/users";
-import { gqlCreateUserGroup } from "@/lib/api/queries/user-groups";
+import {
+  gqlCreateUserGroup,
+  gqlUpdateUserGroup,
+} from "@/lib/api/queries/user-groups";
 
 type UserSheetFormProps = {
   open: boolean;
@@ -90,7 +93,7 @@ export default function UserGroupSheetForm({ ...props }: UserSheetFormProps) {
 
     const name = values.name;
 
-    const gql = gqlCreateUserGroup;
+    const gql = props.userGroup ? gqlUpdateUserGroup : gqlCreateUserGroup;
     let variables:
       | {
           createUserGroupData: {
@@ -164,8 +167,12 @@ export default function UserGroupSheetForm({ ...props }: UserSheetFormProps) {
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
               <SheetHeader>
-                <SheetTitle>Create user group</SheetTitle>
-                <SheetDescription>Create a new user group.</SheetDescription>
+                <SheetTitle>
+                  {props.userGroup ? "Update" : "Create"} user group
+                </SheetTitle>
+                <SheetDescription>
+                  {props.userGroup ? "Update" : "Create"} a new user group.
+                </SheetDescription>
               </SheetHeader>
 
               <FormField
@@ -208,7 +215,7 @@ export default function UserGroupSheetForm({ ...props }: UserSheetFormProps) {
                 <FormMessage className="">{serverError}</FormMessage>
                 <div className="min-w-10"></div>
                 <Button type="submit" disabled={submitting}>
-                  Create
+                  {props.userGroup ? "Update" : "Create"}
                 </Button>
               </SheetFooter>
             </form>
