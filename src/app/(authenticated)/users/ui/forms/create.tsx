@@ -97,12 +97,9 @@ export default function UserCreateSheetForm({ ...props }: UserSheetFormProps) {
         username,
         email,
         password,
+        groups: selectedGroups.current,
       },
     };
-
-    if (selectedGroups.current.length > 0) {
-      variables.createUserData.groups = selectedGroups.current;
-    }
 
     try {
       props.apiClient

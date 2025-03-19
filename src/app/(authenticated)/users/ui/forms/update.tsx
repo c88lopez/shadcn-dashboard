@@ -87,7 +87,15 @@ export default function UserUpdateSheetForm({ ...props }: UserSheetFormProps) {
     const password = values.password;
 
     const gql = gqlUpdateUser;
-    const variables = {
+    const variables: {
+      cuid: string;
+      updateUserData: {
+        username: string;
+        email: string;
+        password?: string;
+        groups?: string[];
+      };
+    } = {
       cuid: props.user.cuid,
       updateUserData: {
         username,
