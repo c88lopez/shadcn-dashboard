@@ -14,9 +14,9 @@ export default function CreateButton({ ...props }: CreateButtonProps) {
 
   return (
     <div>
-      <Button variant="default" onClick={() => setSheetFormOpen(true)}>
-        Create
+      <Button variant="outline" onClick={() => setSheetFormOpen(true)}>
         <Plus />
+        Create
       </Button>
 
       <UserSheetForm

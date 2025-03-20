@@ -136,7 +136,11 @@ export function DataTable({ ...props }) {
 
         <div className="flex w-full"></div>
 
-        <Button disabled={refresh} onClick={() => setRefresh(true)}>
+        <Button
+          variant="outline"
+          disabled={refresh}
+          onClick={() => setRefresh(true)}
+        >
           <RefreshCcw />
         </Button>
 
@@ -148,7 +152,7 @@ export function DataTable({ ...props }) {
       {/* Table */}
       <div className="rounded-md border">
         <Table>
-          <TableHeader>
+          <TableHeader className="sticky top-0 z-10 bg-muted">
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
