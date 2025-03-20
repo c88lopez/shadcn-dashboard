@@ -10,7 +10,7 @@ export default async function Users() {
   const accessToken = session?.user?.id ?? "";
 
   return (
-    <div className="container mx-auto py-10">
+    <div className="container mx-auto py-10 gap-4 p-4 pt-0">
       <ClientPage
         graphqlServerUrl={graphqlServerUrl}
         accessToken={accessToken}
