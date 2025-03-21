@@ -37,7 +37,7 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import MenuItem from "@/app/(authenticated)/user-groups/ui/forms/menu-item";
+import MenuItem from "@/components/menu-item";
 import { useSetRefreshContext } from "@/providers/refresh";
 import { useUsersContext } from "@/providers/users";
 import {
@@ -202,7 +202,7 @@ export default function UserGroupSheetForm({ ...props }: UserSheetFormProps) {
                     users.map((user) => (
                       <MenuItem
                         key={user.cuid}
-                        user={user}
+                        entity={{ cuid: user.cuid, displayName: user.username }}
                         selectedList={selectedUsers}
                         updateSelectedList={updateSelectedGroups}
                       />

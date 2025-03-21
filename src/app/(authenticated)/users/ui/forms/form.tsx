@@ -38,7 +38,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import MenuItem from "@/app/(authenticated)/users/ui/forms/menu-item";
+import MenuItem from "@/components/menu-item";
 import { gqlCreateUser, gqlUpdateUser } from "@/lib/api/queries/users";
 
 type UserSheetFormProps = {
@@ -230,9 +230,9 @@ export default function UserSheetForm({ ...props }: UserSheetFormProps) {
                   userGroups.map((group) => (
                     <MenuItem
                       key={group.cuid}
-                      group={group}
-                      selectedGroups={selectedGroups}
-                      updateSelectedGroups={updateSelectedGroups}
+                      entity={{ cuid: group.cuid, displayName: group.name }}
+                      selectedList={selectedGroups}
+                      updateSelectedList={updateSelectedGroups}
                     />
                   ))
                 )}
