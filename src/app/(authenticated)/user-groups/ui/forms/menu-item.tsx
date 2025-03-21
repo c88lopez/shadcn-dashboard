@@ -4,12 +4,12 @@ import { User } from "@vandelay-labs/schemas";
 
 type MenuItemProps = {
   user: Pick<User, "cuid" | "username">;
-  selectedUsers: RefObject<User["cuid"][]>;
-  updateSelectedUsers: (cuid: User["cuid"], add: boolean) => void;
+  selectedList: RefObject<string[]>;
+  updateSelectedList: (cuid: string, add: boolean) => void;
 };
 
 export default function MenuItem({ ...props }: MenuItemProps) {
-  const itemChecked = props.selectedUsers.current.some(
+  const itemChecked = props.selectedList.current.some(
     (userCuid: string) => userCuid === props.user.cuid,
   );
 
@@ -21,8 +21,8 @@ export default function MenuItem({ ...props }: MenuItemProps) {
     setChecked(isChecked);
 
     // Add cuid if checked, remove if unchecked
-    if (props.updateSelectedUsers) {
-      props.updateSelectedUsers(props.user.cuid, isChecked !== "");
+    if (props.updateSelectedList) {
+      props.updateSelectedList(props.user.cuid, isChecked !== "");
     }
   }
 
