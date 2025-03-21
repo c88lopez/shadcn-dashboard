@@ -4,8 +4,8 @@ import { User } from "@vandelay-labs/schemas";
 
 type MenuItemProps = {
   user: Pick<User, "cuid" | "username">;
-  selectedUsers: RefObject<string[]>;
-  updateSelectedUsers: (cuid: string, add: boolean) => void;
+  selectedUsers: RefObject<User["cuid"][]>;
+  updateSelectedUsers: (cuid: User["cuid"], add: boolean) => void;
 };
 
 export default function MenuItem({ ...props }: MenuItemProps) {

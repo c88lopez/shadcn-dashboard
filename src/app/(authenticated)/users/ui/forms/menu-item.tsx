@@ -3,10 +3,9 @@ import { DropdownMenuCheckboxItem } from "@/components/ui/dropdown-menu";
 import { UserGroup } from "@vandelay-labs/schemas";
 
 type MenuItemProps = {
-  updateSelectedGroups: (cuid: string, add: boolean) => void;
   group: Pick<UserGroup, "cuid" | "name">;
-  disabled?: boolean;
-  selectedGroups: RefObject<string[]>;
+  selectedGroups: RefObject<UserGroup["cuid"][]>;
+  updateSelectedGroups: (cuid: UserGroup["cuid"], add: boolean) => void;
 };
 
 export default function MenuItem({ ...props }: MenuItemProps) {
@@ -31,7 +30,6 @@ export default function MenuItem({ ...props }: MenuItemProps) {
         event.preventDefault();
       }}
       checked={checked !== ""}
-      disabled={props.disabled}
       onCheckedChange={(isChecked) =>
         onCheckedChange(isChecked ? props.group.cuid : "")
       }
