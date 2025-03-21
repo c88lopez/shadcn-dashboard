@@ -230,9 +230,9 @@ export default function UserSheetForm({ ...props }: UserSheetFormProps) {
                   userGroups.map((group) => (
                     <MenuItem
                       key={group.cuid}
-                      updateSelectedGroups={updateSelectedGroups}
                       group={group}
                       selectedGroups={selectedGroups}
+                      updateSelectedGroups={updateSelectedGroups}
                     />
                   ))
                 )}
