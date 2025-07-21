@@ -5,7 +5,7 @@ import { z } from "zod";
 import { CredentialsSignin } from "@auth/core/errors";
 
 async function getUser(email: string, password: string) {
-  const authLoginResponse = await fetch("http://localhost:3001/auth/login", {
+  const authLoginResponse = await fetch(`${process.env.AUTH_API_URL}/auth/login`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ email, password }),

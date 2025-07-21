@@ -43,7 +43,7 @@ export async function AppSidebar({
     redirect("/login");
   }
 
-  const profileResponse = await fetch("http://localhost:3001/profile", {
+  const profileResponse = await fetch(`${process.env.AUTH_API_URL}/profile`, {
     headers: { Authorization: `Bearer ${session?.user?.id}` },
   });
 
